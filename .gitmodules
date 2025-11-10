@@ -1,0 +1,9 @@
+[submodule "autoplant_userinterface"]
+	path = autoplant_userinterface
+	url = git@github.com:autoplant2025-2/autoplant_userinterface.git
+[submodule "embassy"]
+	path = embassy
+	url = https://github.com/embassy-rs/embassy.git
+[submodule "st7920_async"]
+	path = st7920_async
+	url = git@github.com:autoplant2025-2/st7920_async.git

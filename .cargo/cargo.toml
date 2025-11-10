@@ -1,0 +1,23 @@
+# Choose a default "cargo run" tool.
+# probe-run is recommended if you have a debugger
+# elf2uf2-rs loads firmware over USB when the rp2040 is in boot mode
+
+# This file configures Cargo's behavior for this specific project.
+
+[build]
+# Set the default build target for the RP2040 (Cortex-M0+).
+# This allows you to run `cargo build` without specifying `--target thumbv6m-none-eabi` every time.
+target = "thumbv6m-none-eabi"
+target_os = "none"
+
+[run]
+# Set the default build target for the RP2040 (Cortex-M0+).
+# This allows you to run `cargo build` without specifying `--target thumbv6m-none-eabi` every time.
+target = "thumbv6m-none-eabi"
+target_os = "none"
+
+[target.thumbv6m-none-eabi]
+# Specify the runner for `cargo run`.
+# This command tells Cargo to use `cargo-embed` to flash the program to your RP2040
+# and start a debugging session.
+runner = "probe-rs run --chip RP2040"

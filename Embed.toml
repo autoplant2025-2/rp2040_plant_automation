@@ -1,0 +1,20 @@
+[default.probe]
+speed = 50000
+
+[default.general]
+chip = "rp2040"
+
+[default.rtt]
+enabled = true
+timeout = 3000
+
+[default.reset]
+# Whether or not the target should be reset.
+# When flashing is enabled as well, the target will be reset after flashing regardless of this setting.
+enabled = true
+# Whether or not the target should be halted after reset.
+halt_afterwards = true
+
+[default.gdb]
+enabled = true
+gdb_connection_string = "127.0.0.1:1337"
