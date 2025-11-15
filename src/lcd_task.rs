@@ -9,10 +9,21 @@ use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::mutex::Mutex;
 use embassy_time::{Duration, Ticker};
 use rgb::Rgb;
-use slint::platform::software_renderer::{MinimalSoftwareWindow};
-use slint::platform::update_timers_and_animations;
+use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
+use slint::platform::{update_timers_and_animations, WindowAdapter};
 use st7920_async::{SpiPixel8, SpiScreenBuffer, St7920SpiGdRam};
 use crate::EmbassyDelay;
+
+pub fn render(window: &MinimalSoftwareWindow, buffer: &mut [Rgb<u8>], force_update: bool) -> bool {
+	window.draw_if_needed(|renderer| {
+		if force_update {
+			renderer.set_repaint_buffer_type(RepaintBufferType::NewBuffer);
+		} else {
+			renderer.set_repaint_buffer_type(RepaintBufferType::ReusedBuffer);
+		}
+		renderer.render(buffer, 128);
+	})
+}
 
 // ui를 렌더링하고 lcd로 출력하는 태스크
 #[embassy_executor::task]
@@ -21,7 +32,8 @@ pub async fn lcd_task2(
 	gp14: Peri<'static, PIN_14>,
 	gp15: Peri<'static, PIN_15>,
 	dma: Peri<'static, DMA_CH0>,
-	window: Rc<MinimalSoftwareWindow>
+	window: Rc<MinimalSoftwareWindow>,
+	keyboard_window: Rc<MinimalSoftwareWindow>,
 ) {
 	let mut config = spi::Config::default();
 	config.frequency = 600_000;
@@ -45,15 +57,20 @@ pub async fn lcd_task2(
 	let mut ticker = Ticker::every(Duration::from_hz(30));
 	let mut render_buffer = [Rgb::<u8>::default(); 128 * 64];
 
+	let mut last_minimized = true;
+
 	loop {
 		ticker.next().await;
 		update_timers_and_animations();
 		yield_now().await;
-		let update = window.draw_if_needed(|renderer| {
-			renderer.render(&mut render_buffer, 128);
-		});
-
-		if update {
+		let current_minimized = keyboard_window.is_minimized();
+		let force_update = current_minimized != last_minimized;
+		last_minimized = current_minimized;
+		let mut update = render(&*window, &mut render_buffer, force_update);
+		if !keyboard_window.is_minimized() {
+			update |= render(&*keyboard_window, &mut render_buffer[(128 * window.size().height as usize)..], force_update);
+		}
+		if update || force_update {
 			yield_now().await;
 			// top half of lcd x = 0..8, y = 0..32
 			for y in 0..32 {
