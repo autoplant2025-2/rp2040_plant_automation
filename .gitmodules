@@ -7,3 +7,9 @@
 [submodule "st7920_async"]
 	path = st7920_async
 	url = git@github.com:autoplant2025-2/st7920_async.git
+[submodule "temp_hum_driver"]
+	path = temp_hum_sensor_async
+	url = ./temp_hum_driver
+[submodule "pcf8591_driver"]
+	path = pcf8591_async
+	url = ./pcf8591_driver

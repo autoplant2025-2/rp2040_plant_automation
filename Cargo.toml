@@ -34,7 +34,33 @@ dummy-pin = "1.0.0"
 st7920_async = { path = "./st7920_async" }
 
 #misc
+
+
+
 rgb = "0.8"
+piddiy = "0.1.2"
+adskalman = { version = "0.1.0", default-features = false }
+fixed = { version = "1.27.0", features = ["num-traits", "serde"] }
+arraydeque = { version = "0.5", default-features = false }
+nalgebra = { version = "0.21", default-features = false }
+temp_hum_sensor_async = { path = "./temp_hum_sensor_async" }
+pcf8591_async = { path = "./pcf8591_async" }
+num-traits = { version = "0.2", default-features = false, features = ["libm"] }
+
+# Persistence
+sequential-storage = { version = "3.0.0", features = ["defmt-03"] }
+embedded-storage = "0.3.1"
+embedded-storage-async = "0.4.1"
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+postcard = { version = "1.0", default-features = false }
+heapless = { version = "0.8", features = ["serde"] }
+#cyw43 = "0.6.0"
+#cyw43-pio = "0.9.0"
+#embassy-net = "0.7.1"
+static_cell = "2.1.1"
+
+
+
 
 [dependencies.slint]
 git = "https://github.com/slint-ui/slint.git"
@@ -45,7 +71,7 @@ features = ["compat-1-2", "unsafe-single-threaded", "libm", "renderer-software"]
 
 [profile.release]
 debug = 2
-lto = true
+lto = "fat"
 opt-level = 'z'
 
 [profile.dev]

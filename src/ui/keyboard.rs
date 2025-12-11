@@ -1,6 +1,6 @@
 use slint::{ComponentHandle, SharedString};
 use slint::platform::WindowEvent;
-use crate::{EmbeddedUI, KeyboardWindow, KeyboardWindowLogic};
+use crate::ui::{EmbeddedUI, KeyboardWindow, KeyboardWindowLogic};
 
 pub fn keyboard(component_handle: &EmbeddedUI, keyboard: &KeyboardWindow)
 {

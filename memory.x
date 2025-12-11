@@ -14,4 +14,4 @@ MEMORY {
     /* RAM: ORIGIN = 0x20000000, LENGTH = 256K        */
     /* SCRATCH_A: ORIGIN = 0x20040000, LENGTH = 4K    */
     /* SCRATCH_B: ORIGIN = 0x20041000, LENGTH = 4K    */
-}
+}   

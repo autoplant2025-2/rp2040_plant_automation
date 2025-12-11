@@ -8,6 +8,7 @@ chip = "rp2040"
 enabled = true
 timeout = 3000
 
+
 [default.reset]
 # Whether or not the target should be reset.
 # When flashing is enabled as well, the target will be reset after flashing regardless of this setting.

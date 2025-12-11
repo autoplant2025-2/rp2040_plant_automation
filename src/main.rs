@@ -2,13 +2,20 @@
 #![no_main]
 extern crate alloc;
 
+#[macro_export]
+macro_rules! modpub {
+    ($name:ident) => {
+        mod $name;
+        pub use $name::*;
+    };
+}
+
+
 //defmt
 use defmt_rtt as _;
 
 //panic handling
 use panic_probe as _;
-
-slint::include_modules!();
 use alloc::boxed::Box;
 use core::mem::MaybeUninit;
 use embassy_executor::Spawner;
@@ -18,22 +25,25 @@ use embassy_rp::config::Config;
 use embassy_rp::peripherals::PIO0;
 use embassy_rp::pio::{InterruptHandler, Pio};
 use embassy_rp::pio_programs::rotary_encoder::{PioEncoder, PioEncoderProgram};
-use crate::lcd_task::lcd_task2;
 
 //pub use defmt::;
 use embassy_time::Timer;
 use embedded_hal_async::delay::DelayNs;
 use slint::ComponentHandle;
 use talc::{ClaimOnOom, Talc, Talck};
-use crate::encoder_button_task::{encoder_button_task, encoder_task};
-use crate::keyboard::keyboard;
-use crate::lcd_backend::LcdBackend;
+use crate::config_manager::init_persistence_config;
 
-mod lcd_task;
-mod lcd_backend;
 mod main_ui;
-mod encoder_button_task;
-mod keyboard;
+pub mod control;
+pub mod sensor_manager;
+pub mod hardware_manager;
+pub mod userscript;
+pub mod persistence_manager;
+pub mod config_manager;
+pub mod config_types;
+pub mod time_manager;
+mod ui;
+mod network;
 
 static mut ARENA: MaybeUninit<[u8; 1024 * 160]> = MaybeUninit::uninit();
 
@@ -46,6 +56,7 @@ static ALLOCATOR: Talck<spin::Mutex<()>, ClaimOnOom> = Talc::new(unsafe {
 
 bind_interrupts!(struct Irqs {
     PIO0_IRQ_0 => InterruptHandler<PIO0>;
+    I2C0_IRQ => embassy_rp::i2c::InterruptHandler<embassy_rp::peripherals::I2C0>;
 });
 
 #[embassy_executor::main]
@@ -53,52 +64,40 @@ async fn main(spawner: Spawner) {
 	let mut cc = ClockConfig::system_freq(280_000_000).unwrap(); //오버클럭의 생활화.....
 	cc.core_voltage = CoreVoltage::V1_30;
 	let p = embassy_rp::init(Config::new(cc));
-	//lcd backend start
-	let lcd_backend = Box::new(LcdBackend::default());
-	let lcd_window = lcd_backend.window.clone();
-	let lcd_keyboard_window = lcd_backend.keyboard_window.clone();
-	lcd_window.set_size(slint::PhysicalSize::new(128, 64));
-	lcd_keyboard_window.set_size(slint::PhysicalSize::new(128, 41));
-	lcd_keyboard_window.set_minimized(true);
-	slint::platform::set_platform(lcd_backend).unwrap();
 
-	//spawn lcd task
-	spawner.spawn(lcd_task2(
-		p.SPI1,
-		p.PIN_14,
-		p.PIN_15,
-		p.DMA_CH0,
-		lcd_window.clone(),
-		lcd_keyboard_window.clone()
-	).unwrap());
+	let shared_config = init_persistence_config(
+		p.FLASH, p.DMA_CH1
+	).await;
 
 	//spawn input handling task
 	let Pio {
 		mut common, sm0, ..
 	} = Pio::new(p.PIO0, Irqs);
 
+
+
+	// pio encoder
 	let prg = PioEncoderProgram::new(&mut common);
-	let encoder0 = PioEncoder::new(&mut common, sm0, p.PIN_0, p.PIN_1, &prg);
+	let encoder0 = PioEncoder::new(&mut common, sm0, p.PIN_14, p.PIN_15, &prg);
+	
+	ui::init_ui(
+		&spawner,
+		shared_config.clone(),
+		// &mut common,
+		// sm0,
+		// p.PIN_14,
+		// p.PIN_15,
+		encoder0,
+		p.PIN_8,
+		
+		p.SPI0,
+		p.PIN_6,
+		p.PIN_7,
+		p.DMA_CH0
+	);
+	
+	network::init_network(&spawner, shared_config.clone());
 
-	spawner.spawn(encoder_task(
-		lcd_window.clone(),
-		lcd_keyboard_window.clone(),
-		encoder0
-	).unwrap());
-	spawner.spawn(encoder_button_task(
-		lcd_window.clone(),
-		lcd_keyboard_window.clone(),
-		p.PIN_2
-	).unwrap());
-
-	//start ui
-	let ui = EmbeddedUI::new().unwrap();
-	ui.show().unwrap();
-
-	let ui2 = KeyboardWindow::new().unwrap();
-	ui2.show().unwrap();
-
-	keyboard(&ui, &ui2);
 	loop {
 		Timer::after_secs(10).await;
 		let mut buf = [0u8; 256];

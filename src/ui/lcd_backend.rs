@@ -31,14 +31,11 @@ impl Default for LcdBackend {
 
 impl Platform for LcdBackend {
 	fn create_window_adapter(&self) -> Result<Rc<dyn WindowAdapter>, PlatformError> {
-		let fetch = self.window_count.fetch_add(1, Ordering::Relaxed);
+		let fetch = self.window_count.swap(1, Ordering::Relaxed);
 		if fetch == 0 {
-			Ok(self.window.clone())
-		} else if fetch == 1 {
 			Ok(self.keyboard_window.clone())
 		} else {
-			self.window_count.store(2, Ordering::Relaxed);
-			Err(PlatformError::NoPlatform)
+			Ok(self.window.clone())
 		}
 	}
 

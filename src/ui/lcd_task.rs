@@ -3,18 +3,39 @@ use dummy_pin::DummyPin;
 use embassy_embedded_hal::shared_bus::asynch::spi::SpiDeviceWithConfig;
 use embassy_futures::yield_now;
 use embassy_rp::{spi, Peri};
-use embassy_rp::peripherals::{DMA_CH0, PIN_14, PIN_15, SPI1};
+use embassy_rp::peripherals::{DMA_CH0, PIN_6, PIN_7, SPI0};
+use embassy_rp::pio::Pio;
 use embassy_rp::spi::{Phase, Polarity, Spi};
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::mutex::Mutex;
 use embassy_time::{Duration, Ticker};
-use rgb::Rgb;
-use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
+use rgb::Gray;
+use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType, TargetPixel, PremultipliedRgbaColor};
 use slint::platform::{update_timers_and_animations, WindowAdapter};
 use st7920_async::{SpiPixel8, SpiScreenBuffer, St7920SpiGdRam};
 use crate::EmbassyDelay;
 
-pub fn render(window: &MinimalSoftwareWindow, buffer: &mut [Rgb<u8>], force_update: bool) -> bool {
+#[derive(Copy, Clone, Debug, Default)]
+pub struct GrayPixel(pub Gray<u8>);
+
+impl TargetPixel for GrayPixel {
+	fn blend(&mut self, color: PremultipliedRgbaColor) {
+		let a = (255 - color.alpha) as u16;
+		let r = color.red as u16;
+		let g = color.green as u16;
+		let b = color.blue as u16;
+		let gray = (77 * r + 150 * g + 29 * b) >> 8;
+		let v = self.0.value() as u16;
+		self.0 = Gray((gray + (v * a) / 255) as u8);
+	}
+
+	fn from_rgb(r: u8, g: u8, b: u8) -> Self {
+		let gray = (77u16 * r as u16 + 150u16 * g as u16 + 29u16 * b as u16) >> 8;
+		GrayPixel(Gray(gray as u8))
+	}
+}
+
+pub fn render(window: &MinimalSoftwareWindow, buffer: &mut [GrayPixel], force_update: bool) -> bool {
 	window.draw_if_needed(|renderer| {
 		if force_update {
 			renderer.set_repaint_buffer_type(RepaintBufferType::NewBuffer);
@@ -28,9 +49,10 @@ pub fn render(window: &MinimalSoftwareWindow, buffer: &mut [Rgb<u8>], force_upda
 // ui를 렌더링하고 lcd로 출력하는 태스크
 #[embassy_executor::task]
 pub async fn lcd_task2(
-	spi: Peri<'static, SPI1>,
-	gp14: Peri<'static, PIN_14>,
-	gp15: Peri<'static, PIN_15>,
+
+	spi: Peri<'static, SPI0>,
+	gp6: Peri<'static, PIN_6>,
+	gp7: Peri<'static, PIN_7>,
 	dma: Peri<'static, DMA_CH0>,
 	window: Rc<MinimalSoftwareWindow>,
 	keyboard_window: Rc<MinimalSoftwareWindow>,
@@ -41,8 +63,8 @@ pub async fn lcd_task2(
 	config.polarity = Polarity::IdleLow;
 	let bus = Spi::new_txonly(
 		spi,
-		gp14,
-		gp15,
+		gp6,
+		gp7,
 		dma,
 		config.clone()
 	);
@@ -55,7 +77,7 @@ pub async fn lcd_task2(
 
 	// 30fps
 	let mut ticker = Ticker::every(Duration::from_hz(30));
-	let mut render_buffer = [Rgb::<u8>::default(); 128 * 64];
+	let mut render_buffer = [GrayPixel::default(); 128 * 64];
 
 	let mut last_minimized = true;
 
@@ -96,22 +118,14 @@ pub async fn lcd_task2(
 	}
 }
 
-fn bitmap_nibble(pixbuf: &mut impl Iterator<Item=Rgb<u8>>) -> u8 {
+fn bitmap_nibble(pixbuf: &mut impl Iterator<Item=GrayPixel>) -> u8 {
 	let mut bitmap = 0;
-	bitmap |= (luma(pixbuf.next().unwrap()) < 128) as u8;
+	bitmap |= (pixbuf.next().unwrap().0.value() < 128) as u8;
 	bitmap <<= 1;
-	bitmap |= (luma(pixbuf.next().unwrap()) < 128) as u8;
+	bitmap |= (pixbuf.next().unwrap().0.value() < 128) as u8;
 	bitmap <<= 1;
-	bitmap |= (luma(pixbuf.next().unwrap()) < 128) as u8;
+	bitmap |= (pixbuf.next().unwrap().0.value() < 128) as u8;
 	bitmap <<= 1;
-	bitmap |= (luma(pixbuf.next().unwrap()) < 128) as u8;
+	bitmap |= (pixbuf.next().unwrap().0.value() < 128) as u8;
 	bitmap
-}
-
-fn luma(rgb: Rgb<u8>) -> u8 {
-	let Rgb {r, g, b} = rgb;
-	// Use integer weights approximating perceived brightness:
-	// 0.299 * R + 0.587 * G + 0.114 * B ≈ (77 * R + 150 * G + 29 * B) >> 8
-	let luminance = (77u16 * r as u16 + 150u16 * g as u16 + 29u16 * b as u16) >> 8;
-	luminance as u8
 }
