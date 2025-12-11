@@ -19,6 +19,8 @@ panic-probe = { version = "1.0.0", features = ["print-defmt"]}
 embassy-rp = { path = "./embassy/embassy-rp", features = ["unstable-pac", "time-driver", "critical-section-impl", "rp2040", "defmt"] }
 #embassy-usb = { path = "./embassy/embassy-usb", features = ["defmt", "max-interface-count-8"]}
 
+
+
 #utils
 embassy-sync = { path = "./embassy/embassy-sync" }
 embassy-futures = { path = "./embassy/embassy-futures" }
@@ -32,6 +34,10 @@ dummy-pin = "1.0.0"
 
 #device drivers
 st7920_async = { path = "./st7920_async" }
+
+cyw43 = { path = "./embassy/cyw43", features = ["defmt", "firmware-logs"] }
+cyw43-pio = { path = "./embassy/cyw43-pio", features = ["defmt"] }
+embassy-net = { path = "./embassy/embassy-net", features = ["defmt", "tcp", "udp", "dhcpv4", "medium-ethernet"]  }
 
 #misc
 
@@ -54,10 +60,8 @@ embedded-storage-async = "0.4.1"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 postcard = { version = "1.0", default-features = false }
 heapless = { version = "0.8", features = ["serde"] }
-#cyw43 = "0.6.0"
-#cyw43-pio = "0.9.0"
-#embassy-net = "0.7.1"
-static_cell = "2.1.1"
+
+static_cell = { version = "2.1.1", features = ["nightly"] }
 
 
 

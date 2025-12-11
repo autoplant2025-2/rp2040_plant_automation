@@ -26,11 +26,11 @@ pub fn init_ui(
 	config: SharedConfig,
 	// # hardwares
 	// ## input hardwares
-	pio_encoder: PioEncoder<'static, PIO0, 0>,
-	// pio: &mut Common<PIO0>,
-	// pio_sm: StateMachine<'static, PIO0, 0>,
-	// enc_a: Peri<'static, PIN_14>,
-	// enc_b: Peri<'static, PIN_15>,
+	//pio_encoder: PioEncoder<'static, PIO0, 0>,
+	pio: &mut Common<'static, PIO0>,
+	pio_sm: StateMachine<'static, PIO0, 0>,
+	enc_a: Peri<'static, PIN_14>,
+	enc_b: Peri<'static, PIN_15>,
 	enc_button: Peri<'static, PIN_8>,
 	// ## display hardwares
 	spi: Peri<'static, SPI0>,
@@ -48,6 +48,10 @@ pub fn init_ui(
 	lcd_window.set_size(slint::PhysicalSize::new(128, 64));
 
 	slint::platform::set_platform(lcd_backend).unwrap();
+
+	// pio encoder
+	let prg = PioEncoderProgram::new(pio);
+	let pio_encoder: PioEncoder<'static, PIO0, 0> = PioEncoder::new(pio, pio_sm, enc_a, enc_b, &prg);
 
 	//spawn lcd task
 	spawner.spawn(lcd_task2(

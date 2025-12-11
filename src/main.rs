@@ -23,13 +23,14 @@ use embassy_rp::bind_interrupts;
 use embassy_rp::clocks::{ClockConfig, CoreVoltage};
 use embassy_rp::config::Config;
 use embassy_rp::peripherals::PIO0;
-use embassy_rp::pio::{InterruptHandler, Pio};
+use embassy_rp::pio::{Common, InterruptHandler, Pio};
 use embassy_rp::pio_programs::rotary_encoder::{PioEncoder, PioEncoderProgram};
 
 //pub use defmt::;
 use embassy_time::Timer;
 use embedded_hal_async::delay::DelayNs;
 use slint::ComponentHandle;
+use static_cell::make_static;
 use talc::{ClaimOnOom, Talc, Talck};
 use crate::config_manager::init_persistence_config;
 
@@ -43,7 +44,7 @@ pub mod config_manager;
 pub mod config_types;
 pub mod time_manager;
 mod ui;
-mod network;
+//mod network;
 
 static mut ARENA: MaybeUninit<[u8; 1024 * 160]> = MaybeUninit::uninit();
 
@@ -65,29 +66,26 @@ async fn main(spawner: Spawner) {
 	cc.core_voltage = CoreVoltage::V1_30;
 	let p = embassy_rp::init(Config::new(cc));
 
-	let shared_config = init_persistence_config(
-		p.FLASH, p.DMA_CH1
-	).await;
-
 	//spawn input handling task
 	let Pio {
 		mut common, sm0, ..
 	} = Pio::new(p.PIO0, Irqs);
 
+	let shared_config = init_persistence_config(
+		p.FLASH, p.DMA_CH1
+	).await;
 
 
-	// pio encoder
-	let prg = PioEncoderProgram::new(&mut common);
-	let encoder0 = PioEncoder::new(&mut common, sm0, p.PIN_14, p.PIN_15, &prg);
-	
+
+
 	ui::init_ui(
 		&spawner,
 		shared_config.clone(),
-		// &mut common,
-		// sm0,
-		// p.PIN_14,
-		// p.PIN_15,
-		encoder0,
+		&mut common,
+		sm0,
+		p.PIN_14,
+		p.PIN_15,
+		//encoder0,
 		p.PIN_8,
 		
 		p.SPI0,
@@ -96,7 +94,7 @@ async fn main(spawner: Spawner) {
 		p.DMA_CH0
 	);
 	
-	network::init_network(&spawner, shared_config.clone());
+	//network::init_network(&spawner, shared_config.clone());
 
 	loop {
 		Timer::after_secs(10).await;
