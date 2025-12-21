@@ -21,3 +21,4 @@ target_os = "none"
 # This command tells Cargo to use `cargo-embed` to flash the program to your RP2040
 # and start a debugging session.
 runner = "probe-rs run --chip RP2040"
+rustflags = ["-C", "linker=flip-link"]

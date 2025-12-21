@@ -5,10 +5,10 @@ edition = "2024"
 
 [dependencies]
 #system runtime
-cortex-m-rt = "0.7.0"
+cortex-m-rt = "0.7.5"
 talc = { version = "4.4.3", features = ["counters"]}
 defmt = { version = "1.0.1", features = ["alloc"] }
-defmt-rtt = "1.0.0"
+defmt-rtt = "1.1.0"
 embassy-executor = { path = "./embassy/embassy-executor", features = ["arch-cortex-m", "executor-thread", "executor-interrupt", "defmt"] }
 embassy-time = { path = "./embassy/embassy-time" }
 portable-atomic = { version = "1.5", features = ["critical-section"] }
@@ -46,7 +46,7 @@ embassy-net = { path = "./embassy/embassy-net", features = ["defmt", "tcp", "udp
 rgb = "0.8"
 piddiy = "0.1.2"
 adskalman = { version = "0.1.0", default-features = false }
-fixed = { version = "1.27.0", features = ["num-traits", "serde"] }
+fixed = { version = "1.28.0", features = ["num-traits", "serde"] }
 arraydeque = { version = "0.5", default-features = false }
 nalgebra = { version = "0.21", default-features = false }
 temp_hum_sensor_async = { path = "./temp_hum_sensor_async" }
@@ -57,17 +57,26 @@ num-traits = { version = "0.2", default-features = false, features = ["libm"] }
 sequential-storage = { version = "3.0.0", features = ["defmt-03"] }
 embedded-storage = "0.3.1"
 embedded-storage-async = "0.4.1"
-serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 postcard = { version = "1.0", default-features = false }
-heapless = { version = "0.8", features = ["serde"] }
+heapless = { version = "0.9.1", features = ["serde"] }
 
 static_cell = { version = "2.1.1", features = ["nightly"] }
+chrono = { version = "0.4.42", default-features = false, features = ["alloc", "serde"] }
+qrcode2 = { version = "0.17.1", default-features = false }
+nanofish = { path = "nanofish", default-features = false }
+picoserve = { version = "0.17.1", features = ["embassy", "alloc", "json"] }
+percent-encoding = { version = "2.3.2", default-features = false, features = ["alloc"] }
+blisp = { version = "0.2.0", default-features = false }
+serde_json = { version = "1.0.145", default-features = false, features = ["alloc"] }
+
 
 
 
 
 [dependencies.slint]
 git = "https://github.com/slint-ui/slint.git"
+#path = "../slint/api/rs/slint"
 default-features = false
 features = ["compat-1-2", "unsafe-single-threaded", "libm", "renderer-software"]
 
@@ -85,3 +94,11 @@ opt-level = 'z'
 
 [build-dependencies]
 slint-build = {git = "https://github.com/slint-ui/slint.git"}
+#slint-build = { path = "../slint/api/rs/build" }
+
+[patch.crates-io]
+embassy-time = { path = "./embassy/embassy-time" }
+embassy-sync = { path = "./embassy/embassy-sync" }
+embassy-futures = { path = "./embassy/embassy-futures" }
+embassy-executor = { path = "./embassy/embassy-executor" }
+embassy-net = { path = "./embassy/embassy-net" }

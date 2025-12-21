@@ -1,0 +1,254 @@
+warning: unused config key `build.target_os` in `C:\Users\PC\rp2040_plant_automation\.cargo\config.toml`
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling heapless v0.8.0
+   Compiling heapless v0.9.2
+    Checking embassy-sync v0.7.2 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-sync)
+    Checking embassy-time-queue-utils v0.3.0 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-time-queue-utils)
+    Checking smoltcp v0.12.0
+    Checking embassy-embedded-hal v0.5.0 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-embedded-hal)
+    Checking embassy-net-driver-channel v0.3.2 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-net-driver-channel)
+    Checking cyw43 v0.6.0 (C:\Users\PC\rp2040_plant_automation\embassy\cyw43)
+    Checking embassy-rp v0.9.0 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-rp)
+    Checking embassy-net v0.7.1 (C:\Users\PC\rp2040_plant_automation\embassy\embassy-net)
+    Checking nanofish v0.9.1
+warning: direct cast of function item into an integer
+   --> embassy\embassy-rp\src\multicore.rs:257:28
+    |
+257 |         core1_startup::<F> as usize,
+    |                            ^^^^^^^^
+    |
+    = note: `#[warn(function_casts_as_integer)]` on by default
+help: first cast to a pointer `as *const ()`
+    |
+257 |         core1_startup::<F> as *const () as usize,
+    |                            ++++++++++++
+
+warning: `embassy-rp` (lib) generated 1 warning (run `cargo fix --lib -p embassy-rp` to apply 1 suggestion)
+    Checking cyw43-pio v0.9.0 (C:\Users\PC\rp2040_plant_automation\embassy\cyw43-pio)
+    Checking rp2040_plant_automation v0.1.0 (C:\Users\PC\rp2040_plant_automation)
+error: no global memory allocator found but one is required; link to std or add `#[global_allocator]` to a static item that implements the GlobalAlloc trait
+
+error[E0599]: no method named `foo` found for struct `HttpServer<RX_SIZE, TX_SIZE, REQ_SIZE, MAX_RESPONSE_SIZE>` in the current scope
+  --> src\bin\check_nanofish_api.rs:11:12
+   |
+11 |     server.foo(); 
+   |            ^^^ method not found in `HttpServer<_, _, _, _>`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `rp2040_plant_automation` (bin "check_nanofish_api") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+warning: unused import: `alloc::boxed::Box`
+  --> src\main.rs:19:5
+   |
+19 | use alloc::boxed::Box;
+   |     ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Common`
+  --> src\main.rs:27:23
+   |
+27 | use embassy_rp::pio::{Common, InterruptHandler, Pio};
+   |                       ^^^^^^
+
+warning: unused imports: `PioEncoderProgram` and `PioEncoder`
+  --> src\main.rs:28:48
+   |
+28 | use embassy_rp::pio_programs::rotary_encoder::{PioEncoder, PioEncoderProgram};
+   |                                                ^^^^^^^^^^  ^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::blocking_mutex::raw::NoopRawMutex`
+  --> src\main.rs:29:5
+   |
+29 | use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `static_cell::make_static`
+  --> src\main.rs:35:5
+   |
+35 | use static_cell::make_static;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::rc::Rc`
+ --> src\persistence_manager.rs:1:5
+  |
+1 | use alloc::rc::Rc;
+  |     ^^^^^^^^^^^^^
+
+warning: unused import: `embassy_executor::Spawner`
+ --> src\persistence_manager.rs:2:5
+  |
+2 | use embassy_executor::Spawner;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_rp::Peri`
+ --> src\persistence_manager.rs:4:5
+  |
+4 | use embassy_rp::Peri;
+  |     ^^^^^^^^^^^^^^^^
+
+warning: unused imports: `DMA_CH0` and `DMA_CH1`
+ --> src\persistence_manager.rs:5:31
+  |
+5 | use embassy_rp::peripherals::{DMA_CH0, DMA_CH1, FLASH};
+  |                               ^^^^^^^  ^^^^^^^
+
+warning: unused import: `embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex`
+ --> src\persistence_manager.rs:6:5
+  |
+6 | use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::mutex::Mutex`
+ --> src\persistence_manager.rs:7:5
+  |
+7 | use embassy_sync::mutex::Mutex;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::config_manager::ConfigManager`
+  --> src\persistence_manager.rs:10:5
+   |
+10 | use crate::config_manager::ConfigManager;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_executor::Spawner`
+ --> src\config_manager.rs:2:5
+  |
+2 | use embassy_executor::Spawner;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `PIO0`
+ --> src\ui\encoder_button_input_task.rs:4:38
+  |
+4 | use embassy_rp::peripherals::{PIN_8, PIO0};
+  |                                      ^^^^
+
+warning: unused imports: `Direction` and `PioEncoder`
+ --> src\ui\encoder_button_input_task.rs:5:48
+  |
+5 | use embassy_rp::pio_programs::rotary_encoder::{Direction, PioEncoder};
+  |                                                ^^^^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `embassy_rp::pio::Pio`
+ --> src\ui\lcd_task.rs:7:5
+  |
+7 | use embassy_rp::pio::Pio;
+  |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_rp::time_driver::init`
+ --> src\ui\initial_configuration.rs:5:5
+  |
+5 | use embassy_rp::time_driver::init;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `SharedString`
+ --> src\ui\initial_configuration.rs:9:39
+  |
+9 | use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+  |                                       ^^^^^^^^^^^^
+
+warning: unused import: `cyw43::Control`
+ --> src\network\mod.rs:2:5
+  |
+2 | use cyw43::Control;
+  |     ^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::boxed::Box`
+ --> src\network\http_server.rs:1:5
+  |
+1 | use alloc::boxed::Box;
+  |     ^^^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::string::ToString`
+ --> src\network\http_server.rs:4:5
+  |
+4 | use alloc::string::ToString;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::vec`
+ --> src\network\http_server.rs:5:5
+  |
+5 | use alloc::vec;
+  |     ^^^^^^^^^^
+
+warning: unused import: `alloc::vec::Vec`
+ --> src\network\http_server.rs:6:5
+  |
+6 | use alloc::vec::Vec;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_net::Stack`
+  --> src\network\http_server.rs:10:5
+   |
+10 | use embassy_net::Stack;
+   |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::blocking_mutex::raw::NoopRawMutex`
+  --> src\network\http_server.rs:11:5
+   |
+11 | use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::mutex::Mutex`
+  --> src\network\http_server.rs:12:5
+   |
+12 | use embassy_sync::mutex::Mutex;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+   --> src\ui\initial_configuration.rs:174:9
+    |
+174 |                 let mut network_stack = network_stack.lock().await;
+    |                     ----^^^^^^^^^^^^^
+    |                     |
+    |                     help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> src\network\http_server.rs:227:9
+    |
+227 |     let mut handler = PlantAutomationHandler::new(shared_config, shared_sensor_data);
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unused import: `slint::ComponentHandle`
+  --> src\main.rs:34:5
+   |
+34 | use slint::ComponentHandle;
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `sensors`
+  --> src\userscript.rs:19:41
+   |
+19 |     pub fn calculate_targets(&mut self, sensors: &SensorData, current_time_ms: u64) -> TargetState {
+   |                                         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_sensors`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `current_time_ms`
+  --> src\userscript.rs:19:63
+   |
+19 |     pub fn calculate_targets(&mut self, sensors: &SensorData, current_time_ms: u64) -> TargetState {
+   |                                                               ^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_current_time_ms`
+
+warning: field `start_time` is never read
+ --> src\userscript.rs:9:5
+  |
+7 | pub struct UserScript {
+  |            ---------- field in this struct
+8 |     // Add any state needed for the user script here
+9 |     start_time: u64,
+  |     ^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: type alias `Number` is never used
+ --> src\config_types.rs:6:6
+  |
+6 | type Number = I16F16;
+  |      ^^^^^^
+
+warning: `rp2040_plant_automation` (bin "rp2040_plant_automation") generated 33 warnings (run `cargo fix --bin "rp2040_plant_automation" -p rp2040_plant_automation` to apply 30 suggestions)

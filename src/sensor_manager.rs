@@ -55,6 +55,11 @@ impl Default for CalibrationConfig {
 }
 
 /// Manages sensor acquisition, oversampling, and EKF state estimation
+use embassy_rp::adc::{Adc, Channel, Async, Config as AdcConfig, InterruptHandler as AdcInterruptHandler};
+use embassy_rp::peripherals::ADC;
+use embassy_rp::gpio::Pull;
+use embassy_rp::Peri;
+
 pub struct SensorManager<'a, I2C> {
     // Single Multi-Channel Filter
     filter: MultiChannelKalmanFilter,
@@ -66,41 +71,39 @@ pub struct SensorManager<'a, I2C> {
     sht20: Sht20<I2cDevice<'a, NoopRawMutex, I2C>>,
     // AHT20
     aht20: Aht20<I2cDevice<'a, NoopRawMutex, I2C>>,
-    // PCF8591 (NTCs)
-    pcf8591: Pcf8591<I2cDevice<'a, NoopRawMutex, I2C>>,
+    
+    // ADC
+    adc: Adc<'a, Async>,
+    pin_soil: Channel<'a>,
+    pin_ec: Channel<'a>,
 }
 
 impl<'a, I2C> SensorManager<'a, I2C>
 where
     I2C: I2c<Error = embassy_rp::i2c::Error>,
 {
-    pub fn new(bus: &'a Mutex<NoopRawMutex, I2C>) -> Self {
+    pub fn new(
+        bus: &'a Mutex<NoopRawMutex, I2C>,
+        adc: Adc<'a, Async>,
+        pin_soil: Channel<'a>,
+        pin_ec: Channel<'a>,
+    ) -> Self {
         // Initialize filter with default noise parameters
         let q = 0.01;
-        let r_temp = 0.1;
-        let r_hum = 1.0;
-        let r_adc = 5.0;
+        let r_temp = 40.0;
+        let r_hum = 5.0;
+        let r_adc = 0.2; // Faster response (was 5.0)
 
-        // Initial state guess
         let initial_values = [
-            25.0, // SHT Temp
-            50.0, // SHT Hum
-            25.0, // AHT Temp
-            50.0, // AHT Hum
-            25.0, 25.0, 25.0, 25.0, // NTCs
-            500.0, // Soil
-            0.0, // EC
+            25.0, 50.0, 25.0, 50.0,
+            25.0, 25.0, 25.0, 25.0,
+            4095.0, 0.0, // Soil starts at Max (Safety - No Tray), EC at 0
         ];
 
-        // Measurement noise for each channel
         let measurement_noises = [
-            r_temp, // SHT Temp
-            r_hum,  // SHT Hum
-            r_temp, // AHT Temp
-            r_hum,  // AHT Hum
-            r_temp, r_temp, r_temp, r_temp, // NTCs
-            r_adc,  // Soil
-            r_adc,  // EC
+            r_temp, r_hum, r_temp, r_hum,
+            r_temp, r_temp, r_temp, r_temp,
+            r_adc, r_adc,
         ];
 
         Self {
@@ -108,27 +111,26 @@ where
             calibration: CalibrationConfig::default(),
             sht20: Sht20::new(I2cDevice::new(bus)),
             aht20: Aht20::new(I2cDevice::new(bus)),
-            pcf8591: Pcf8591::new(I2cDevice::new(bus), 0x48),
+            adc,
+            pin_soil,
+            pin_ec,
         }
     }
 
     pub async fn step(&mut self) -> SensorData {
         let mut data = SensorData::default();
         
-        // Gather raw readings (Option where appropriate)
         let sht = self.read_sht20_raw().await;
         let aht = self.read_aht20_raw().await;
-        let ntcs = self.read_pcf8591_ntcs().await;
+        // Mocked PCF8591
+        let ntcs = Some([30.0, 30.0, 5.0, 70.0]); 
         let soil = self.read_adc_soil().await;
         
-        // Use internal air temp as approximation for water temp if available, else default 25.0
         let ec_temp = sht.map(|r| r.temp).unwrap_or(25.0);
         let ec = self.read_adc_ec(ec_temp).await; 
 
         let ntc_temps_or_default = ntcs.unwrap_or([0.0; 4]);
 
-        // Construct measurement vector for Kalman Filter (all f32)
-        // Use 0.0 for missing values to keep filter running (arbitrary value as requested)
         let measurements = [
             sht.map(|r| r.temp).unwrap_or(0.0),
             sht.map(|r| r.hum).unwrap_or(0.0),
@@ -142,10 +144,8 @@ where
             ec.unwrap_or(0.0),
         ];
 
-        // Update filter
         let filtered = self.filter.update(measurements);
 
-        // Map back to SensorData (Number) - Only populate if raw reading was successful
         data.internal = sht.map(|_| TempHumReading {
             temp: Number::from_num(filtered[0]),
             hum: filtered[1] as u8,
@@ -168,88 +168,109 @@ where
         data
     }
 
-    // Helper methods to get raw f32 for Kalman Filter
     async fn read_sht20_raw(&mut self) -> Option<temp_hum_sensor_async::Reading> {
         match self.sht20.read(&mut embassy_time::Delay).await {
             Ok(reading) => Some(reading),
-            Err(_) => {
-                defmt::error!("SHT20 Read Failed");
-                None
-            }
+            Err(_) => None
         }
     }
 
     async fn read_aht20_raw(&mut self) -> Option<temp_hum_sensor_async::Reading> {
         match self.aht20.read(&mut embassy_time::Delay).await {
             Ok(reading) => Some(reading),
-            Err(_) => {
-                defmt::error!("AHT20 Read Failed");
-                None
-            }
+            Err(_) => None
         }
     }
 
-
-
-    async fn read_pcf8591_ntcs(&mut self) -> Option<[f32; 4]> {
-        let raw = self.pcf8591.read_all().await.map_err(|_| defmt::error!("PCF8591 read failed")).ok()?;
-        let mut ntc_converted = [0.0; 4];
-        for i in 0..4 {
-            if let Some(converted) = convert_ntc(raw[i]) {
-                ntc_converted[i] = converted;
-            } else {
-                defmt::error!("PCF8591 ntc {} abnormal reading: {}", i, raw[i]);
-                return None;
-            }
+    async fn read_adc_soil(&mut self) -> Option<f32> { 
+        let raw = self.adc.read(&mut self.pin_soil).await;
+        match raw {
+            Ok(val) => Some(val as f32),
+            Err(_) => None
         }
-        Some(ntc_converted)
-    }
-
-    async fn read_adc_soil(&self) -> Option<f32> { 
-        // Placeholder: In real hardware, this would read a specific channel from PCF8591 or internal ADC
-        // For now, let's assume it's on PCF8591 Channel 3 (re-using NTC slot for demo?)
-        // Or better, just return a dummy value until we define the pin map.
-        let adc_val = 150; // Dummy Raw Value
-        Some(adc_val as f32)
     } 
     
-    async fn read_adc_ec(&self, temp_c: f32) -> Option<f32> { 
-        let adc_val = 20; // Dummy
-        convert_ec(adc_val, temp_c, self.calibration.ec_k_value)
+    async fn read_adc_ec(&mut self, temp_c: f32) -> Option<f32> { 
+        let raw = self.adc.read(&mut self.pin_ec).await;
+        match raw {
+            Ok(val) => {
+                 // Map 12-bit (4095) to suitable range or use voltage
+                 let adc_8bit = (val >> 4) as u8;
+                 convert_ec(adc_8bit, temp_c, self.calibration.ec_k_value)
+            },
+            Err(_) => None
+        }
     }
 }
 
-// --- Conversion Helpers ---
-
 fn convert_ntc(adc: u8) -> Option<f32> {
-    if !(20..236).contains(&adc) { return None; } // Fault
-    
+    if !(20..236).contains(&adc) { return None; }
     let v_out = adc as f32 * (PCF8591_VREF / 255.0);
-    // Divider: V_out = V_ref * R_ntc / (R_series + R_ntc)  (if NTC is bottom)
-    // R_ntc = R_series * V_out / (V_ref - V_out)
     let r_ntc = NTC_R_SERIES_DEFAULT * v_out / (PCF8591_VREF - v_out);
-    
-    // Steinhart-Hart (Beta variant)
-    // 1/T = 1/T0 + (1/B) * ln(R/R0)
     let t0 = NTC_T_NOMINAL_DEFAULT + 273.15;
     let inv_t = (1.0 / t0) + (1.0 / NTC_BETA_DEFAULT) * (r_ntc / NTC_R_NOMINAL_DEFAULT).ln();
-    
     Some((1.0 / inv_t) - 273.15)
 }
 
 fn convert_ec(adc: u8, temp_c: f32, k_value: f32) -> Option<f32> {
     let v_raw = adc as f32 * (PCF8591_VREF / 255.0);
-    
-    // Temperature Compensation
-    // V_comp = V_raw / (1.0 + 0.02 * (T - 25.0))
     let v_comp = v_raw / (1.0 + 0.02 * (temp_c - 25.0));
-
-    // Keystudio TDS Formula (Cubic)
-    // TDS = (133.42*v^3 - 255.86*v^2 + 857.39*v) * 0.5 * K
     let v3 = v_comp * v_comp * v_comp;
     let v2 = v_comp * v_comp;
-    
     let tds_ppm = (133.42 * v3 - 255.86 * v2 + 857.39 * v_comp) * 0.5 * k_value;
-    
     Some(tds_ppm.max(0.0))
+}
+
+use alloc::rc::Rc;
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+pub type SharedSensorData = Rc<Mutex<CriticalSectionRawMutex, SensorData>>;
+
+#[embassy_executor::task]
+pub async fn sensor_task(
+    i2c: embassy_rp::i2c::I2c<'static, embassy_rp::peripherals::I2C0, embassy_rp::i2c::Async>,
+    adc: Adc<'static, Async>,
+    pin_soil: Peri<'static, embassy_rp::peripherals::PIN_27>,
+    pin_ec: Peri<'static, embassy_rp::peripherals::PIN_26>,
+    shared_data: SharedSensorData,
+) {
+    let bus = Mutex::new(i2c);
+    let ch_soil = Channel::new_pin(pin_soil, Pull::None);
+    let ch_ec = Channel::new_pin(pin_ec, Pull::None);
+    let mut manager = SensorManager::new(&bus, adc, ch_soil, ch_ec);
+    
+    loop {
+        let data = manager.step().await;
+        {
+            let mut shared = shared_data.lock().await;
+            *shared = data;
+        }
+        
+        embassy_time::Timer::after_millis(100).await;
+    }
+}
+
+impl defmt::Format for CalibrationConfig {
+    fn format(&self, f: defmt::Formatter) {
+        defmt::write!(f, "CalibrationConfig {{ ec_k_value: {} }}", self.ec_k_value);
+    }
+}
+
+impl defmt::Format for TempHumReading {
+    fn format(&self, f: defmt::Formatter) {
+        defmt::write!(f, "TempHumReading {{ temp: {}, hum: {} }}", 
+            self.temp.to_num::<f32>(), self.hum);
+    }
+}
+
+impl defmt::Format for SensorData {
+    fn format(&self, f: defmt::Formatter) {
+        defmt::write!(f, "SensorData {{ internal: {}, external: {}, soil: {}, ec: {} }}",
+            self.internal,
+            self.external,
+            // Simple handling for Option<Number> by converting to f32 or 0.0
+            match self.soil_moisture { Some(n) => n.to_num::<f32>(), None => -1.0 },
+            match self.ec_level { Some(n) => n.to_num::<f32>(), None => -1.0 }
+            // Skipping NTC/CO2 for brevity/simplicity in logs to avoid complex formatting logic
+        );
+    }
 }

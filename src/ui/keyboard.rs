@@ -1,6 +1,6 @@
 use slint::{ComponentHandle, SharedString};
 use slint::platform::WindowEvent;
-use crate::ui::{EmbeddedUI, KeyboardWindow, KeyboardWindowLogic};
+use crate::ui::{EmbeddedUI, KeyboardWindow, KeyboardWindowLogic, VirtualKeyboardHandler};
 
 pub fn keyboard(component_handle: &EmbeddedUI, keyboard: &KeyboardWindow)
 {
@@ -37,19 +37,19 @@ pub fn keyboard(component_handle: &EmbeddedUI, keyboard: &KeyboardWindow)
 		}
 	});
 	let weak_main_component_handle = component_handle.as_weak();
-	keyboard.on_key_down(move |key: SharedString| {
+	keyboard.global::<VirtualKeyboardHandler>().on_key_down(move |key: SharedString| {
 		if let Some(component_handle2) = weak_main_component_handle.upgrade() {
 			component_handle2.window().dispatch_event(WindowEvent::KeyPressed {text: key});
 		}
 	});
 	let weak_main_component_handle = component_handle.as_weak();
-	keyboard.on_key_down_repeat(move |key: SharedString| {
+	keyboard.global::<VirtualKeyboardHandler>().on_key_down_repeat(move |key: SharedString| {
 		if let Some(component_handle2) = weak_main_component_handle.upgrade() {
 			component_handle2.window().dispatch_event(WindowEvent::KeyPressRepeated {text: key});
 		}
 	});
 	let weak_main_component_handle = component_handle.as_weak();
-	keyboard.on_key_up(move |key: SharedString| {
+	keyboard.global::<VirtualKeyboardHandler>().on_key_up(move |key: SharedString| {
 		if let Some(component_handle2) = weak_main_component_handle.upgrade() {
 			component_handle2.window().dispatch_event(WindowEvent::KeyReleased {text: key});
 		}

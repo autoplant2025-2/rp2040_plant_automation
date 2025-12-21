@@ -1,0 +1,241 @@
+warning: unused config key `build.target_os` in `C:\Users\PC\rp2040_plant_automation\.cargo\config.toml`
+warning: direct cast of function item into an integer
+   --> embassy\embassy-rp\src\multicore.rs:257:28
+    |
+257 |         core1_startup::<F> as usize,
+    |                            ^^^^^^^^
+    |
+    = note: `#[warn(function_casts_as_integer)]` on by default
+help: first cast to a pointer `as *const ()`
+    |
+257 |         core1_startup::<F> as *const () as usize,
+    |                            ++++++++++++
+
+warning: `embassy-rp` (lib) generated 1 warning (run `cargo fix --lib -p embassy-rp` to apply 1 suggestion)
+    Checking rp2040_plant_automation v0.1.0 (C:\Users\PC\rp2040_plant_automation)
+warning: unused import: `pcf8591_async::Pcf8591`
+  --> src\sensor_manager.rs:11:5
+   |
+11 | use pcf8591_async::Pcf8591;
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Config as AdcConfig` and `InterruptHandler as AdcInterruptHandler`
+  --> src\sensor_manager.rs:58:44
+   |
+58 | use embassy_rp::adc::{Adc, Channel, Async, Config as AdcConfig, InterruptHandler as AdcInterruptHandler};
+   |                                            ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_rp::peripherals::ADC`
+  --> src\sensor_manager.rs:59:5
+   |
+59 | use embassy_rp::peripherals::ADC;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Level`
+ --> src\hardware_manager.rs:2:32
+  |
+2 | use embassy_rp::gpio::{Output, Level};
+  |                                ^^^^^
+
+warning: unused import: `alloc::vec::Vec`
+ --> src\userscript.rs:5:5
+  |
+5 | use alloc::vec::Vec;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::rc::Rc`
+ --> src\persistence_manager.rs:1:5
+  |
+1 | use alloc::rc::Rc;
+  |     ^^^^^^^^^^^^^
+
+warning: unused import: `embassy_executor::Spawner`
+ --> src\persistence_manager.rs:2:5
+  |
+2 | use embassy_executor::Spawner;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_rp::Peri`
+ --> src\persistence_manager.rs:4:5
+  |
+4 | use embassy_rp::Peri;
+  |     ^^^^^^^^^^^^^^^^
+
+warning: unused imports: `DMA_CH0` and `DMA_CH1`
+ --> src\persistence_manager.rs:5:31
+  |
+5 | use embassy_rp::peripherals::{DMA_CH0, DMA_CH1, FLASH};
+  |                               ^^^^^^^  ^^^^^^^
+
+warning: unused import: `embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex`
+ --> src\persistence_manager.rs:6:5
+  |
+6 | use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::mutex::Mutex`
+ --> src\persistence_manager.rs:7:5
+  |
+7 | use embassy_sync::mutex::Mutex;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::config_manager::ConfigManager`
+  --> src\persistence_manager.rs:10:5
+   |
+10 | use crate::config_manager::ConfigManager;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_executor::Spawner`
+ --> src\config_manager.rs:2:5
+  |
+2 | use embassy_executor::Spawner;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `PIO0`
+ --> src\ui\encoder_button_input_task.rs:4:38
+  |
+4 | use embassy_rp::peripherals::{PIN_8, PIO0};
+  |                                      ^^^^
+
+warning: unused imports: `Direction` and `PioEncoder`
+ --> src\ui\encoder_button_input_task.rs:5:48
+  |
+5 | use embassy_rp::pio_programs::rotary_encoder::{Direction, PioEncoder};
+  |                                                ^^^^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `embassy_rp::pio::Pio`
+ --> src\ui\lcd_task.rs:7:5
+  |
+7 | use embassy_rp::pio::Pio;
+  |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_rp::time_driver::init`
+ --> src\ui\initial_configuration.rs:5:5
+  |
+5 | use embassy_rp::time_driver::init;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `SharedString`
+ --> src\ui\initial_configuration.rs:9:39
+  |
+9 | use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+  |                                       ^^^^^^^^^^^^
+
+warning: unused import: `cyw43::Control`
+ --> src\network\mod.rs:2:5
+  |
+2 | use cyw43::Control;
+  |     ^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::string::ToString`
+ --> src\network\http_server.rs:3:5
+  |
+3 | use alloc::string::ToString;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex`
+  --> src\main.rs:52:5
+   |
+52 | use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> src\sensor_manager.rs:236:36
+    |
+236 |     let ch_soil = Channel::new_pin(pin_soil, Pull::None);
+    |                   ---------------- ^^^^^^^^ expected `Peri<'_, _>`, found `PIN_26`
+    |                   |
+    |                   arguments to this function are incorrect
+    |
+    = note: expected struct `Peri<'_, _>`
+               found struct `PIN_26`
+note: associated function defined here
+   --> C:\Users\PC\rp2040_plant_automation\embassy\embassy-rp\src\adc.rs:36:12
+    |
+ 36 |     pub fn new_pin(pin: Peri<'p, impl AdcPin + 'p>, pull: Pull) -> Self {
+    |            ^^^^^^^
+
+error[E0308]: mismatched types
+   --> src\sensor_manager.rs:237:34
+    |
+237 |     let ch_ec = Channel::new_pin(pin_ec, Pull::None);
+    |                 ---------------- ^^^^^^ expected `Peri<'_, _>`, found `PIN_27`
+    |                 |
+    |                 arguments to this function are incorrect
+    |
+    = note: expected struct `Peri<'_, _>`
+               found struct `PIN_27`
+note: associated function defined here
+   --> C:\Users\PC\rp2040_plant_automation\embassy\embassy-rp\src\adc.rs:36:12
+    |
+ 36 |     pub fn new_pin(pin: Peri<'p, impl AdcPin + 'p>, pull: Pull) -> Self {
+    |            ^^^^^^^
+
+warning: variable does not need to be mutable
+   --> src\ui\initial_configuration.rs:174:9
+    |
+174 |                 let mut network_stack = network_stack.lock().await;
+    |                     ----^^^^^^^^^^^^^
+    |                     |
+    |                     help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+error[E0308]: arguments to this function are incorrect
+   --> src\main.rs:106:19
+    |
+106 |     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, pin_soil, pin_ec, shared_sensor_data.clone()).unwrap());
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: expected `PIN_26`, found `Peri<'_, PIN_26>`
+   --> src\main.rs:106:64
+    |
+106 |     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, pin_soil, pin_ec, shared_sensor_data.clone()).unwrap());
+    |                                                                ^^^^^^^^
+    = note: expected struct `PIN_26`
+               found struct `Peri<'_, PIN_26>`
+note: expected `PIN_27`, found `Peri<'_, PIN_27>`
+   --> src\main.rs:106:74
+    |
+106 |     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, pin_soil, pin_ec, shared_sensor_data.clone()).unwrap());
+    |                                                                          ^^^^^^
+    = note: expected struct `PIN_27`
+               found struct `Peri<'_, PIN_27>`
+note: function defined here
+   --> src\sensor_manager.rs:228:14
+    |
+228 | pub async fn sensor_task(
+    |              ^^^^^^^^^^^
+...
+231 |     pin_soil: embassy_rp::peripherals::PIN_26,
+    |     -----------------------------------------
+232 |     pin_ec: embassy_rp::peripherals::PIN_27,
+    |     ---------------------------------------
+help: consider dereferencing the type
+    |
+106 |     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, *pin_soil, pin_ec, shared_sensor_data.clone()).unwrap());
+    |                                                                +
+help: consider dereferencing the type
+    |
+106 |     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, pin_soil, *pin_ec, shared_sensor_data.clone()).unwrap());
+    |                                                                          +
+
+warning: unused variable: `start`
+  --> src\ui\dashboard_task.rs:37:31
+   |
+37 |         let day = if let Some(start) = start_ts {
+   |                               ^^^^^ help: if this is intentional, prefix it with an underscore: `_start`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `time_str`
+  --> src\userscript.rs:27:106
+   |
+27 | ... days_since_start: u32, time_str: &str) -> TargetState {
+   |                            ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_time_str`
+
+For more information about this error, try `rustc --explain E0308`.
+warning: `rp2040_plant_automation` (bin "rp2040_plant_automation") generated 24 warnings
+error: could not compile `rp2040_plant_automation` (bin "rp2040_plant_automation") due to 3 previous errors; 24 warnings emitted

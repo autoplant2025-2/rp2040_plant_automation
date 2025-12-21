@@ -1,0 +1,255 @@
+[1m[93mwarning[0m: unused config key `build.target_os` in `C:\Users\PC\rp2040_plant_automation\.cargo\config.toml`
+[1m[93mwarning[0m[1m[97m: direct cast of function item into an integer[0m
+   [1m[96m--> [0membassy\embassy-rp\src\multicore.rs:257:28
+    [1m[96m|[0m
+[1m[96m257[0m [1m[96m|[0m         core1_startup::<F> as usize,
+    [1m[96m|[0m                            [1m[93m^^^^^^^^[0m
+    [1m[96m|[0m
+    [1m[96m= [0m[1m[97mnote[0m: `#[warn(function_casts_as_integer)]` on by default
+[1m[96mhelp[0m: first cast to a pointer `as *const ()`
+    [1m[96m|[0m
+[1m[96m257[0m [1m[96m| [0m        core1_startup::<F>[92m as *const ()[0m as usize,
+    [1m[96m|[0m                            [92m++++++++++++[0m
+
+[1m[93mwarning[0m: `embassy-rp` (lib) generated 1 warning (run `cargo fix --lib -p embassy-rp` to apply 1 suggestion)
+[1m[92m    Checking[0m rp2040_plant_automation v0.1.0 (C:\Users\PC\rp2040_plant_automation)
+[1m[91merror[E0433][0m[1m[97m: failed to resolve: could not find `listen` in `picoserve`[0m
+   [1m[96m--> [0msrc\network\http_server.rs:142:36
+    [1m[96m|[0m
+[1m[96m142[0m [1m[96m|[0m         if let Err(e) = picoserve::listen::serve(&app, &config, &mut http_buffer, &mut socket).await {
+    [1m[96m|[0m                                    [1m[91m^^^^^^[0m [1m[91mcould not find `listen` in `picoserve`[0m
+
+[1m[91merror[E0425][0m[1m[97m: cannot find function, tuple struct or tuple variant `Html` in module `picoserve::response`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:80:26
+   [1m[96m|[0m
+[1m[96m80[0m [1m[96m|[0m     picoserve::response::Html(html)
+   [1m[96m|[0m                          [1m[91m^^^^[0m [1m[91mnot found in `picoserve::response`[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::boxed::Box`[0m
+  [1m[96m--> [0msrc\main.rs:19:5
+   [1m[96m|[0m
+[1m[96m19[0m [1m[96m|[0m use alloc::boxed::Box;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^[0m
+   [1m[96m|[0m
+   [1m[96m= [0m[1m[97mnote[0m: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m[1m[97m: unused import: `Common`[0m
+  [1m[96m--> [0msrc\main.rs:27:23
+   [1m[96m|[0m
+[1m[96m27[0m [1m[96m|[0m use embassy_rp::pio::{Common, InterruptHandler, Pio};
+   [1m[96m|[0m                       [1m[93m^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused imports: `PioEncoderProgram` and `PioEncoder`[0m
+  [1m[96m--> [0msrc\main.rs:28:48
+   [1m[96m|[0m
+[1m[96m28[0m [1m[96m|[0m use embassy_rp::pio_programs::rotary_encoder::{PioEncoder, PioEncoderProgram};
+   [1m[96m|[0m                                                [1m[93m^^^^^^^^^^[0m  [1m[93m^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::blocking_mutex::raw::NoopRawMutex`[0m
+  [1m[96m--> [0msrc\main.rs:29:5
+   [1m[96m|[0m
+[1m[96m29[0m [1m[96m|[0m use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::mutex::Mutex`[0m
+  [1m[96m--> [0msrc\main.rs:30:5
+   [1m[96m|[0m
+[1m[96m30[0m [1m[96m|[0m use embassy_sync::mutex::Mutex;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `static_cell::make_static`[0m
+  [1m[96m--> [0msrc\main.rs:35:5
+   [1m[96m|[0m
+[1m[96m35[0m [1m[96m|[0m use static_cell::make_static;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::rc::Rc`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:1:5
+  [1m[96m|[0m
+[1m[96m1[0m [1m[96m|[0m use alloc::rc::Rc;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_executor::Spawner`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:2:5
+  [1m[96m|[0m
+[1m[96m2[0m [1m[96m|[0m use embassy_executor::Spawner;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_rp::Peri`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:4:5
+  [1m[96m|[0m
+[1m[96m4[0m [1m[96m|[0m use embassy_rp::Peri;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused imports: `DMA_CH0` and `DMA_CH1`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:5:31
+  [1m[96m|[0m
+[1m[96m5[0m [1m[96m|[0m use embassy_rp::peripherals::{DMA_CH0, DMA_CH1, FLASH};
+  [1m[96m|[0m                               [1m[93m^^^^^^^[0m  [1m[93m^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:6:5
+  [1m[96m|[0m
+[1m[96m6[0m [1m[96m|[0m use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::mutex::Mutex`[0m
+ [1m[96m--> [0msrc\persistence_manager.rs:7:5
+  [1m[96m|[0m
+[1m[96m7[0m [1m[96m|[0m use embassy_sync::mutex::Mutex;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `crate::config_manager::ConfigManager`[0m
+  [1m[96m--> [0msrc\persistence_manager.rs:10:5
+   [1m[96m|[0m
+[1m[96m10[0m [1m[96m|[0m use crate::config_manager::ConfigManager;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_executor::Spawner`[0m
+ [1m[96m--> [0msrc\config_manager.rs:2:5
+  [1m[96m|[0m
+[1m[96m2[0m [1m[96m|[0m use embassy_executor::Spawner;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `PIO0`[0m
+ [1m[96m--> [0msrc\ui\encoder_button_input_task.rs:4:38
+  [1m[96m|[0m
+[1m[96m4[0m [1m[96m|[0m use embassy_rp::peripherals::{PIN_8, PIO0};
+  [1m[96m|[0m                                      [1m[93m^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused imports: `Direction` and `PioEncoder`[0m
+ [1m[96m--> [0msrc\ui\encoder_button_input_task.rs:5:48
+  [1m[96m|[0m
+[1m[96m5[0m [1m[96m|[0m use embassy_rp::pio_programs::rotary_encoder::{Direction, PioEncoder};
+  [1m[96m|[0m                                                [1m[93m^^^^^^^^^[0m  [1m[93m^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_rp::pio::Pio`[0m
+ [1m[96m--> [0msrc\ui\lcd_task.rs:7:5
+  [1m[96m|[0m
+[1m[96m7[0m [1m[96m|[0m use embassy_rp::pio::Pio;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_rp::time_driver::init`[0m
+ [1m[96m--> [0msrc\ui\initial_configuration.rs:5:5
+  [1m[96m|[0m
+[1m[96m5[0m [1m[96m|[0m use embassy_rp::time_driver::init;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `SharedString`[0m
+ [1m[96m--> [0msrc\ui\initial_configuration.rs:9:39
+  [1m[96m|[0m
+[1m[96m9[0m [1m[96m|[0m use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+  [1m[96m|[0m                                       [1m[93m^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `cyw43::Control`[0m
+ [1m[96m--> [0msrc\network\mod.rs:2:5
+  [1m[96m|[0m
+[1m[96m2[0m [1m[96m|[0m use cyw43::Control;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::boxed::Box`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:1:5
+  [1m[96m|[0m
+[1m[96m1[0m [1m[96m|[0m use alloc::boxed::Box;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::format`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:2:5
+  [1m[96m|[0m
+[1m[96m2[0m [1m[96m|[0m use alloc::format;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::string::ToString`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:4:5
+  [1m[96m|[0m
+[1m[96m4[0m [1m[96m|[0m use alloc::string::ToString;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::vec`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:5:5
+  [1m[96m|[0m
+[1m[96m5[0m [1m[96m|[0m use alloc::vec;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `alloc::vec::Vec`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:6:5
+  [1m[96m|[0m
+[1m[96m6[0m [1m[96m|[0m use alloc::vec::Vec;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `core::str::FromStr`[0m
+ [1m[96m--> [0msrc\network\http_server.rs:8:5
+  [1m[96m|[0m
+[1m[96m8[0m [1m[96m|[0m use core::str::FromStr;
+  [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_executor::Spawner`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:10:5
+   [1m[96m|[0m
+[1m[96m10[0m [1m[96m|[0m use embassy_executor::Spawner;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_net::Stack`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:12:5
+   [1m[96m|[0m
+[1m[96m12[0m [1m[96m|[0m use embassy_net::Stack;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::blocking_mutex::raw::NoopRawMutex`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:13:5
+   [1m[96m|[0m
+[1m[96m13[0m [1m[96m|[0m use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_sync::mutex::Mutex`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:14:5
+   [1m[96m|[0m
+[1m[96m14[0m [1m[96m|[0m use embassy_sync::mutex::Mutex;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `embassy_time::Duration`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:15:5
+   [1m[96m|[0m
+[1m[96m15[0m [1m[96m|[0m use embassy_time::Duration;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused import: `picoserve::io::Read`[0m
+  [1m[96m--> [0msrc\network\http_server.rs:17:5
+   [1m[96m|[0m
+[1m[96m17[0m [1m[96m|[0m use picoserve::io::Read;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: variable does not need to be mutable[0m
+   [1m[96m--> [0msrc\ui\initial_configuration.rs:174:9
+    [1m[96m|[0m
+[1m[96m174[0m [1m[96m|[0m                 let mut network_stack = network_stack.lock().await;
+    [1m[96m|[0m                     [1m[96m----[0m[1m[93m^^^^^^^^^^^^^[0m
+    [1m[96m|[0m                     [1m[96m|[0m
+    [1m[96m|[0m                     [1m[96mhelp: remove this `mut`[0m
+    [1m[96m|[0m
+    [1m[96m= [0m[1m[97mnote[0m: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m[1m[97m: unused import: `slint::ComponentHandle`[0m
+  [1m[96m--> [0msrc\main.rs:34:5
+   [1m[96m|[0m
+[1m[96m34[0m [1m[96m|[0m use slint::ComponentHandle;
+   [1m[96m|[0m     [1m[93m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[93mwarning[0m[1m[97m: unused variable: `sensors`[0m
+  [1m[96m--> [0msrc\userscript.rs:19:41
+   [1m[96m|[0m
+[1m[96m19[0m [1m[96m|[0m     pub fn calculate_targets(&mut self, sensors: &SensorData, current_time_ms: u64) -> TargetState {
+   [1m[96m|[0m                                         [1m[93m^^^^^^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_sensors`[0m
+   [1m[96m|[0m
+   [1m[96m= [0m[1m[97mnote[0m: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m[1m[97m: unused variable: `current_time_ms`[0m
+  [1m[96m--> [0msrc\userscript.rs:19:63
+   [1m[96m|[0m
+[1m[96m19[0m [1m[96m|[0m     pub fn calculate_targets(&mut self, sensors: &SensorData, current_time_ms: u64) -> TargetState {
+   [1m[96m|[0m                                                               [1m[93m^^^^^^^^^^^^^^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_current_time_ms`[0m
+
+[1m[97mSome errors have detailed explanations: E0425, E0433.[0m
+[1m[97mFor more information about an error, try `rustc --explain E0425`.[0m
+[1m[93mwarning[0m: `rp2040_plant_automation` (bin "rp2040_plant_automation") generated 36 warnings
+[1m[91merror[0m: could not compile `rp2040_plant_automation` (bin "rp2040_plant_automation") due to 2 previous errors; 36 warnings emitted

@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Attach 127.0.0.1:1337)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "external",
+            "gdbTarget": "127.0.0.1:1337",
+            "cwd": "${workspaceFolder}",
+            "executable": "C:/Users/PC/.cargo/target/thumbv6m-none-eabi/release/rp2040_plant_automation"
+        },
+        {
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "Probe-rs Launch",
+            "cwd": "${workspaceFolder}",
+            "chip": "RP2040",
+            "flashingConfig": {
+                "flashingEnabled": true,
+                "resetAfterFlashing": true,
+                "haltAfterReset": true
+            },
+            "coreConfigs": [
+                {
+                    "programBinary": "C:/Users/PC/.cargo/target/thumbv6m-none-eabi/release/rp2040_plant_automation",
+                    "chip": "RP2040",
+                    "rttEnabled": true
+                }
+            ],
+            "env": {
+                "DEFMT_LOG": "info"
+            }
+        }
+    ]
+}

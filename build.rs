@@ -18,7 +18,9 @@ fn mem() {
 	// Put `memory.x` in our output directory and ensure it's
 	// on the linker search path.
 	let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());
-	File::create(out.join("memory.x")).unwrap().write_all(include_bytes!("memory.x")).unwrap();
+	//if out.canonicalize().unwrap() != PathBuf::from(env::current_exe().unwrap()).canonicalize().unwrap() {
+		File::create(out.join("memory.x")).unwrap().write_all(include_bytes!("memory.x")).unwrap();
+	//}
 	println!("cargo:rustc-link-search={}", out.display());
 
 	// By default, Cargo will re-run a build script whenever

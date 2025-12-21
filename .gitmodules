@@ -13,3 +13,6 @@
 [submodule "pcf8591_driver"]
 	path = pcf8591_async
 	url = ./pcf8591_driver
+[submodule "nanofish"]
+	path = nanofish
+	url = https://github.com/rttfd/nanofish.git

@@ -100,7 +100,7 @@ impl<'d> PersistenceManager<'d> {
         // WARNING: 9KB on stack might be too much. Consider using heap or splitting.
         // Since we have 'alloc', let's use a heap-allocated buffer.
         
-        let mut buf = [0u8; 9000]; 
+        let mut buf = [0u8; 4096]; 
         let bytes = postcard::to_slice(data, &mut buf).map_err(|_| ())?;
         
         let slice: &[u8] = &*bytes;
@@ -115,7 +115,7 @@ impl<'d> PersistenceManager<'d> {
     }
 
     pub async fn load_plant_config(&mut self) -> Option<PlantConfiguration> {
-        let mut buf = [0u8; 9000];
+        let mut buf = [0u8; 4096];
         
         let item = fetch_item(
             &mut self.flash,

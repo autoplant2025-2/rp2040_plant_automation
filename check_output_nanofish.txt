@@ -1,0 +1,67 @@
+warning: unused config key `build.target_os` in `C:\Users\PC\rp2040_plant_automation\.cargo\config.toml`
+warning: direct cast of function item into an integer
+   --> embassy\embassy-rp\src\multicore.rs:257:28
+    |
+257 |         core1_startup::<F> as usize,
+    |                            ^^^^^^^^
+    |
+    = note: `#[warn(function_casts_as_integer)]` on by default
+help: first cast to a pointer `as *const ()`
+    |
+257 |         core1_startup::<F> as *const () as usize,
+    |                            ++++++++++++
+
+warning: `embassy-rp` (lib) generated 1 warning (run `cargo fix --lib -p embassy-rp` to apply 1 suggestion)
+    Checking rp2040_plant_automation v0.1.0 (C:\Users\PC\rp2040_plant_automation)
+error[E0463]: can't find crate for `std`
+  |
+  = note: the `thumbv6m-none-eabi` target may not support the standard library
+  = note: `std` is required by `check_nanofish_api` because it does not declare `#![no_std]`
+  = help: consider building the standard library from source with `cargo build -Zbuild-std`
+
+error: cannot resolve a prelude import
+
+error[E0432]: unresolved imports `nanofish::Request`, `nanofish::Response`
+ --> src\bin\check_nanofish_api.rs:1:28
+  |
+1 | use nanofish::{HttpServer, Request, Response};
+  |                            ^^^^^^^  ^^^^^^^^ no `Response` in the root
+  |                            |
+  |                            no `Request` in the root
+  |
+  = help: consider importing this struct instead:
+          core::error::Request
+help: a similar name exists in the module
+  |
+1 - use nanofish::{HttpServer, Request, Response};
+1 + use nanofish::{HttpServer, request, Response};
+  |
+help: a similar name exists in the module
+  |
+1 - use nanofish::{HttpServer, Request, Response};
+1 + use nanofish::{HttpServer, Request, response};
+  |
+
+error: no global memory allocator found but one is required; link to std or add `#[global_allocator]` to a static item that implements the GlobalAlloc trait
+
+error: `#[panic_handler]` function required, but not found
+
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+  --> src\bin\check_nanofish_api.rs:4:18
+   |
+ 4 |     let server = HttpServer::new();
+   |                  ^^^^^^^^^^^^^^^-- argument #1 of type `u16` is missing
+   |
+note: associated function defined here
+  --> C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\nanofish-0.9.1\src\server.rs:75:12
+   |
+75 |     pub fn new(port: u16) -> Self {
+   |            ^^^
+help: provide the argument
+   |
+ 4 |     let server = HttpServer::new(/* u16 */);
+   |                                  +++++++++
+
+Some errors have detailed explanations: E0061, E0432, E0463.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `rp2040_plant_automation` (bin "check_nanofish_api") due to 6 previous errors
