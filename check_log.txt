@@ -129,22 +129,34 @@ warning: unused import: `cyw43::Control`
 2 | use cyw43::Control;
   |     ^^^^^^^^^^^^^^
 
-warning: unused import: `crate::control::Number`
- --> src\sensor_history.rs:8:5
+warning: unused import: `Aes128GcmSha256`
+ --> src\network\cloud_sync.rs:6:58
   |
-8 | use crate::control::Number;
-  |     ^^^^^^^^^^^^^^^^^^^^^^
+6 | use embedded_tls::{TlsConnection, TlsConfig, TlsContext, Aes128GcmSha256};
+  |                                                          ^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::vec::Vec`
+  --> src\network\cloud_sync.rs:14:5
+   |
+14 | use alloc::vec::Vec;
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `alloc::string::ToString`
+ --> src\network\http_server.rs:3:5
+  |
+3 | use alloc::string::ToString;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
 
 warning: unused import: `ControlConfig`
-  --> src\main.rs:52:39
+  --> src\main.rs:50:39
    |
-52 | use crate::control::{PlantController, ControlConfig};
+50 | use crate::control::{PlantController, ControlConfig};
    |                                       ^^^^^^^^^^^^^
 
 warning: unused import: `embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex`
-  --> src\main.rs:53:5
+  --> src\main.rs:51:5
    |
-53 | use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+51 | use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 warning: variable does not need to be mutable
@@ -157,41 +169,33 @@ warning: variable does not need to be mutable
     |
     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
 
-error[E0308]: mismatched types
-   --> src\main.rs:110:19
+error[E0283]: type annotations needed for `TlsConfig<'_, _>`
+   --> src\network\cloud_sync.rs:126:9
     |
-110 |     spawner.spawn(crate::sensor_history::history_task(shared_history.clone(), shared_sensor_data.clone())).unwrap();
-    |             ----- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `SpawnToken<_>`, found `Result<SpawnToken<impl Sized>, ...>`
-    |             |
-    |             arguments to this method are incorrect
+126 |     let tls_config = TlsConfig::new().with_server_name(FIREBASE_HOST);
+    |         ^^^^^^^^^^   --------- type must be known at this point
     |
-   ::: src\sensor_history.rs:21:1
+    = note: cannot satisfy `_: TlsCipherSuite`
+help: the following types implement trait `TlsCipherSuite`
+   --> C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\embedded-tls-0.17.0\src\config.rs:43:1
     |
- 21 | #[embassy_executor::task]
-    | ------------------------- the found opaque type
+ 43 | impl TlsCipherSuite for Aes128GcmSha256 {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Aes128GcmSha256`
+...
+ 54 | impl TlsCipherSuite for Aes256GcmSha384 {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Aes256GcmSha384`
+note: required by a bound in `TlsConfig`
+   --> C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\embedded-tls-0.17.0\src\config.rs:126:18
     |
-    = note: expected struct `SpawnToken<_>`
-                 found enum `core::result::Result<SpawnToken<impl Sized>, SpawnError>`
-note: method defined here
-   --> C:\Users\PC\rp2040_plant_automation\embassy\embassy-executor\src\spawner.rs:162:12
+124 | pub struct TlsConfig<'a, CipherSuite>
+    |            --------- required by a bound in this struct
+125 | where
+126 |     CipherSuite: TlsCipherSuite,
+    |                  ^^^^^^^^^^^^^^ required by this bound in `TlsConfig`
+help: consider giving `tls_config` an explicit type, where the type for type parameter `CipherSuite` is specified
     |
-162 |     pub fn spawn<S>(&self, token: SpawnToken<S>) {
-    |            ^^^^^
-help: consider using `Result::expect` to unwrap the `core::result::Result<SpawnToken<impl Sized>, SpawnError>` value, panicking if the value is a `Result::Err`
-    |
-110 |     spawner.spawn(crate::sensor_history::history_task(shared_history.clone(), shared_sensor_data.clone()).expect("REASON")).unwrap();
-    |                                                                                                          +++++++++++++++++
-
-error[E0599]: no method named `unwrap` found for unit type `()` in the current scope
-   --> src\main.rs:110:108
-    |
-110 |     spawner.spawn(crate::sensor_history::history_task(shared_history.clone(), shared_sensor_data.clone())).unwrap();
-    |                                                                                                            ^^^^^^
-    |
-help: there is a method `unwrapped_as` with a similar name
-    |
-110 |     spawner.spawn(crate::sensor_history::history_task(shared_history.clone(), shared_sensor_data.clone())).unwrapped_as();
-    |                                                                                                                  ++++++
+126 |     let tls_config: TlsConfig<'_, CipherSuite> = TlsConfig::new().with_server_name(FIREBASE_HOST);
+    |                   ++++++++++++++++++++++++++++
 
 warning: unused variable: `start`
   --> src\ui\dashboard_task.rs:40:31
@@ -201,7 +205,18 @@ warning: unused variable: `start`
    |
    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
 
-Some errors have detailed explanations: E0308, E0599.
-For more information about an error, try `rustc --explain E0308`.
-warning: `rp2040_plant_automation` (bin "rp2040_plant_automation") generated 24 warnings
-error: could not compile `rp2040_plant_automation` (bin "rp2040_plant_automation") due to 2 previous errors; 24 warnings emitted
+warning: unused variable: `tray_wet`
+  --> src\network\http_server.rs:93:9
+   |
+93 |     let tray_wet: i32 = cal.pid_config.water_cal_wet_tray.to_num();
+   |         ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_tray_wet`
+
+warning: unused import: `Read`
+ --> src\network\cloud_sync.rs:7:25
+  |
+7 | use embedded_io_async::{Read, Write};
+  |                         ^^^^
+
+For more information about this error, try `rustc --explain E0283`.
+warning: `rp2040_plant_automation` (bin "rp2040_plant_automation") generated 28 warnings
+error: could not compile `rp2040_plant_automation` (bin "rp2040_plant_automation") due to 1 previous error; 28 warnings emitted

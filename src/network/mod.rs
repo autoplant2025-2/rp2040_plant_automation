@@ -15,6 +15,7 @@ use portable_atomic::AtomicBool;
 
 mod time_sync_task;
 mod connection_monitor;
+mod cloud_sync;
 pub mod wifi;
 pub mod http_server;
 
@@ -27,7 +28,6 @@ pub async fn init_network(
 	config: SharedConfig,
 	time_manager: SharedTimeManager,
     shared_sensor_data: crate::sensor_manager::SharedSensorData,
-    shared_history: crate::sensor_history::SharedHistory,
 
 	wifi_pio_common: &mut Common<'static, PIO0>,
 	wifi_sm: StateMachine<'static, PIO0, 1>,
@@ -72,7 +72,9 @@ pub async fn init_network(
 	
 	spawner.spawn(time_sync_task::time_sync_task(time_manager, shared_stack.clone(), config.clone()).unwrap());
 	spawner.spawn(connection_monitor::connection_monitor_task(control.clone(), shared_stack.clone(), config.clone()).unwrap());
-    spawner.spawn(http_server::http_server_task(shared_stack.clone(), config.clone(), shared_sensor_data.clone(), shared_history.clone()).unwrap());
+    spawner.spawn(http_server::http_server_task(shared_stack.clone(), config.clone(), shared_sensor_data.clone()).unwrap());
+    spawner.spawn(cloud_sync::cloud_sync_task(shared_stack.clone(), config.clone(), shared_sensor_data.clone()).unwrap());
+
 
 	(control, shared_stack)
 }

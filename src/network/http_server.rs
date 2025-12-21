@@ -13,35 +13,6 @@ use embassy_time::Duration;
 use crate::config_manager::SharedConfig;
 use crate::network::ShareNetworkStack;
 use crate::sensor_manager::SharedSensorData;
-use crate::sensor_history::SharedHistory;
-use serde::{Deserialize, Serialize};
-
-#[derive(Deserialize)]
-struct ConfigUpdate {
-    plant_name: Option<String>,
-    nominal_ec: Option<f32>,
-    target_temp: Option<f32>,
-    light_intensity: Option<u8>,
-    light_start_hour: Option<u8>,
-    light_end_hour: Option<u8>,
-    water_cal_no_tray: Option<i32>,
-    water_cal_dry_tray: Option<i32>,
-    water_cal_wet_tray: Option<i32>,
-    script_source: Option<String>,
-}
-
-#[derive(Serialize)]
-struct FullConfigResponse {
-    plant_name: String,
-    nominal_ec: f32,
-    target_temp: f32,
-    light_intensity: u8,
-    light_start_hour: u8,
-    light_end_hour: u8,
-    water_cal_no_tray: i32,
-    water_cal_dry_tray: i32,
-    water_cal_wet_tray: i32,
-}
 
 const HTML_HEAD: &str = r#"
 <!DOCTYPE html>
@@ -111,7 +82,6 @@ fn html_escape(input: &str) -> String {
 struct AppState {
     config: SharedConfig,
     sensor_data: SharedSensorData,
-    history: SharedHistory,
 }
 
 async fn index(State(state): State<AppState>) -> impl IntoResponse {
@@ -120,12 +90,11 @@ async fn index(State(state): State<AppState>) -> impl IntoResponse {
     let cal = cfg.calibration();
     let tray_no: i32 = cal.pid_config.water_cal_no_tray.to_num();
     let tray_dry: i32 = cal.pid_config.water_cal_dry_tray.to_num();
+
+    
     let tray_wet: i32 = cal.pid_config.water_cal_wet_tray.to_num();
     
-    let mut script_source_str = String::new();
-    if let Ok(s) = core::str::from_utf8(&plant_conf.script_source) {
-        script_source_str.push_str(s);
-    }
+    // Removed script_source reading
 
     let mut response_buffer = String::new();
     response_buffer.push_str(HTML_HEAD);
@@ -176,8 +145,7 @@ async fn index(State(state): State<AppState>) -> impl IntoResponse {
         </div>
         <hr>
 
-        <label for="script_source">Script Source:</label>
-        <textarea id="script_source" name="script_source" rows="10">{}</textarea>
+        <hr>
         
         <button type="submit">Save</button>
     </form>
@@ -190,8 +158,7 @@ async fn index(State(state): State<AppState>) -> impl IntoResponse {
     plant_conf.light_end_hour,
     tray_no,
     tray_dry,
-    tray_wet,
-    html_escape(&script_source_str));
+    tray_wet);
     response_buffer.push_str(HTML_FOOT);
 
     Response::new(StatusCode::OK, response_buffer)
@@ -237,7 +204,7 @@ async fn get_tray(State(state): State<AppState>) -> impl IntoResponse {
 async fn update_config(State(state): State<AppState>, body: String) -> impl IntoResponse {
     let mut plant_name = String::new();
     let mut nominal_ec = 0.0;
-    let mut script_source = String::new();
+    // Removed script_source
     let mut target_temp = 25.0;
     let mut light_intensity = 0;
     let mut light_start_hour = 8;
@@ -254,7 +221,6 @@ async fn update_config(State(state): State<AppState>, body: String) -> impl Into
             match key {
                 "plant_name" => plant_name = decoded_value,
                 "nominal_ec" => nominal_ec = f32::from_str(&decoded_value).unwrap_or(0.0),
-                "script_source" => script_source = decoded_value,
                 "target_temp" => target_temp = f32::from_str(&decoded_value).unwrap_or(25.0),
                 "light_intensity" => light_intensity = u8::from_str(&decoded_value).unwrap_or(0),
                 "light_start_hour" => light_start_hour = u8::from_str(&decoded_value).unwrap_or(8),
@@ -278,8 +244,6 @@ async fn update_config(State(state): State<AppState>, body: String) -> impl Into
             c.light_intensity = light_intensity;
             c.light_start_hour = light_start_hour;
             c.light_end_hour = light_end_hour;
-            c.script_source.clear();
-            c.script_source.extend_from_slice(script_source.as_bytes()).ok();
         }).await;
         
         // Update Calibration (Water Tray)
@@ -297,86 +261,21 @@ async fn update_config(State(state): State<AppState>, body: String) -> impl Into
         .with_headers([("Location", "/")])
 }
 
-async fn get_config_json(State(state): State<AppState>) -> impl IntoResponse {
-    let cfg = state.config.lock().await;
-    let pc = cfg.plant_config();
-    let cal = cfg.calibration();
-    
-    let resp = FullConfigResponse {
-        plant_name: pc.plant_name.to_string(),
-        nominal_ec: pc.nominal_ec,
-        target_temp: pc.target_temp,
-        light_intensity: pc.light_intensity,
-        light_start_hour: pc.light_start_hour,
-        light_end_hour: pc.light_end_hour,
-        water_cal_no_tray: cal.pid_config.water_cal_no_tray.to_num(),
-        water_cal_dry_tray: cal.pid_config.water_cal_dry_tray.to_num(),
-        water_cal_wet_tray: cal.pid_config.water_cal_wet_tray.to_num(),
-    };
-    
-    let json = serde_json::to_string(&resp).unwrap_or_default();
-    Response::new(StatusCode::OK, json)
-        .with_headers([("Content-Type", "application/json")])
-}
-
-async fn update_config_json(
-    State(state): State<AppState>, 
-    picoserve::extract::Json(update): picoserve::extract::Json<ConfigUpdate>
-) -> impl IntoResponse {
-    let mut cfg = state.config.lock().await;
-    
-    cfg.update_plant_config(|c| {
-        if let Some(v) = update.plant_name { c.plant_name = heapless::String::try_from(v.as_str()).unwrap_or_default(); }
-        if let Some(v) = update.nominal_ec { c.nominal_ec = v; }
-        if let Some(v) = update.target_temp { c.target_temp = v; }
-        if let Some(v) = update.light_intensity { c.light_intensity = v; }
-        if let Some(v) = update.light_start_hour { c.light_start_hour = v; }
-        if let Some(v) = update.light_end_hour { c.light_end_hour = v; }
-        if let Some(v) = update.script_source {
-             c.script_source.clear();
-             c.script_source.extend_from_slice(v.as_bytes()).ok();
-        }
-    }).await;
-    
-    if update.water_cal_no_tray.is_some() || update.water_cal_dry_tray.is_some() || update.water_cal_wet_tray.is_some() {
-        use fixed::types::I16F16;
-        cfg.update_calibration(|cal| {
-            if let Some(v) = update.water_cal_no_tray { cal.pid_config.water_cal_no_tray = I16F16::from_num(v); }
-            if let Some(v) = update.water_cal_dry_tray { cal.pid_config.water_cal_dry_tray = I16F16::from_num(v); }
-            if let Some(v) = update.water_cal_wet_tray { cal.pid_config.water_cal_wet_tray = I16F16::from_num(v); }
-        }).await;
-    }
-    
-    Response::new(StatusCode::OK, "{}")
-        .with_headers([("Content-Type", "application/json")])
-}
-
-async fn get_history(State(state): State<AppState>) -> impl IntoResponse {
-    let hist = state.history.lock().await;
-    let json = serde_json::to_string(&*hist).unwrap_or_else(|_| "[]".to_string());
-    Response::new(StatusCode::OK, json)
-        .with_headers([("Content-Type", "application/json")])
-}
-
 #[embassy_executor::task]
 pub async fn http_server_task(
     stack: ShareNetworkStack,
     shared_config: SharedConfig,
     shared_sensor_data: SharedSensorData,
-    shared_history: SharedHistory,
 ) {
     let app = Router::new()
         .route("/", get(index))
         .route("/script.js", get(script))
         .route("/api/ec", get(get_ec))
         .route("/api/tray", get(get_tray))
-        .route("/api/config", get(get_config_json).post(update_config_json))
-        .route("/api/history", get(get_history))
         .route("/config", post(update_config))
         .with_state(AppState {
             config: shared_config,
             sensor_data: shared_sensor_data,
-            history: shared_history,
         });
 
     let timeouts = Timeouts {

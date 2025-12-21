@@ -37,7 +37,7 @@ st7920_async = { path = "./st7920_async" }
 
 cyw43 = { path = "./embassy/cyw43", features = ["defmt", "firmware-logs"] }
 cyw43-pio = { path = "./embassy/cyw43-pio", features = ["defmt"] }
-embassy-net = { path = "./embassy/embassy-net", features = ["defmt", "tcp", "udp", "dhcpv4", "medium-ethernet"]  }
+embassy-net = { path = "./embassy/embassy-net", features = ["defmt", "tcp", "udp", "dhcpv4", "medium-ethernet", "dns"]  }
 
 #misc
 
@@ -64,10 +64,11 @@ heapless = { version = "0.9.1", features = ["serde"] }
 static_cell = { version = "2.1.1", features = ["nightly"] }
 chrono = { version = "0.4.42", default-features = false, features = ["alloc", "serde"] }
 qrcode2 = { version = "0.17.1", default-features = false }
-nanofish = { path = "nanofish", default-features = false }
-picoserve = { version = "0.17.1", features = ["embassy", "alloc", "json"] }
+embedded-tls = { version = "0.17.0", default-features = false, features = ["defmt"] }
+rand_chacha = { version = "0.3", default-features = false }
+rand_core = { version = "0.6.4", default-features = false }
+picoserve = { version = "0.17.1", features = ["embassy", "alloc"] }
 percent-encoding = { version = "2.3.2", default-features = false, features = ["alloc"] }
-blisp = { version = "0.2.0", default-features = false }
 serde_json = { version = "1.0.145", default-features = false, features = ["alloc"] }
 
 

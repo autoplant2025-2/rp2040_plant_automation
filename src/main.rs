@@ -36,14 +36,12 @@ mod main_ui;
 pub mod control;
 pub mod sensor_manager;
 pub mod hardware_manager;
-pub mod userscript;
 pub mod persistence_manager;
 pub mod config_manager;
 pub mod config_types;
 pub mod time_manager;
 mod ui;
 pub mod network;
-pub mod sensor_history;
 
 use embassy_rp::gpio::{Output, Level};
 use embassy_rp::pwm::{Pwm, Config as PwmConfig};
@@ -104,11 +102,6 @@ async fn main(spawner: Spawner) {
     
     let shared_sensor_data: crate::sensor_manager::SharedSensorData = Rc::new(Mutex::new(crate::sensor_manager::SensorData::default()));
     
-    // History
-    use heapless::Deque;
-    let shared_history: crate::sensor_history::SharedHistory = Rc::new(Mutex::new(Deque::new()));
-    spawner.spawn(crate::sensor_history::history_task(shared_history.clone(), shared_sensor_data.clone()).unwrap());
-
     spawner.spawn(crate::sensor_manager::sensor_task(i2c, adc, pin_soil, pin_ec, shared_sensor_data.clone()).unwrap());
 
     // Hardware Peripherals
@@ -156,7 +149,6 @@ async fn main(spawner: Spawner) {
         shared_config.clone(),
         time_manager.clone(),
         shared_sensor_data.clone(),
-        shared_history.clone(),
         &mut common,
         sm1,
         irq0,
@@ -258,7 +250,7 @@ async fn main(spawner: Spawner) {
                     *st = outputs;
                 }
                 
-                defmt::info!("Loop: Sensors: {:?} -> Outputs: {:?}", sensors.internal, outputs);
+                //defmt::info!("Loop: Sensors: {:?} -> Outputs: {:?}", sensors.internal, outputs);
             }
         }
     }
