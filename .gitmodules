@@ -16,3 +16,6 @@
 [submodule "nanofish"]
 	path = nanofish
 	url = https://github.com/rttfd/nanofish.git
+[submodule "picoserve"]
+	path = picoserve
+	url = https://github.com/sammhicks/picoserve.git

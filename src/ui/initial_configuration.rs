@@ -2,11 +2,11 @@ use alloc::rc::Rc;
 use alloc::vec::Vec;
 use chrono::TimeZone;
 use cyw43::{Control, JoinOptions, Scanner};
-use embassy_rp::time_driver::init;
+
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::signal::Signal;
 use embassy_time::Timer;
-use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
+use slint::{ComponentHandle, ModelRc, VecModel};
 use crate::config_manager::SharedConfig;
 use crate::network::{wifi, ShareNetworkStack};
 use crate::network::wifi::{SharedWifiControl, WifiSecurity};
@@ -171,7 +171,7 @@ pub async fn initial_configuration_ui_task(
 				}
 				let options = pass.as_ref().map(|pass| JoinOptions::new(pass.as_bytes())).unwrap_or(JoinOptions::new_open());
 				let mut wifi_control = wifi_control.lock().await;
-				let mut network_stack = network_stack.lock().await;
+				let network_stack = network_stack.lock().await;
 				let mut connected = false;
                 for i in 1..=3 {
                      init_logic.set_status_message(slint::SharedString::from(alloc::format!("와이파이 연결중... ({}/3)", i).as_str()));

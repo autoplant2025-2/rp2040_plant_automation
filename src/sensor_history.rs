@@ -5,7 +5,7 @@ use alloc::rc::Rc;
 use serde::Serialize;
 use heapless::Deque;
 use crate::sensor_manager::SharedSensorData;
-use crate::control::Number;
+
 
 #[derive(Clone, Copy, Debug, Serialize, Default)]
 pub struct HistoryEntry {

@@ -1,4 +1,5 @@
 # RP2040 Pin Mapping
+계획짤때 사용하고 업데이트를 안해서 실제와 다릅니다.
 
 ## User Interface
 | Function | Pin | Notes |

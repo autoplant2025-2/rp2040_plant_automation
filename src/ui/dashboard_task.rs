@@ -2,7 +2,7 @@ use embassy_time::{Timer, Duration};
 use crate::config_manager::SharedConfig;
 use crate::sensor_manager::SharedSensorData;
 use crate::hardware_manager::SharedActuatorState;
-use slint::{ComponentHandle, Weak};
+use slint::ComponentHandle;
 // Import the generated slint module. The parent module `ui` has `slint::include_modules!()`.
 // We need to import the globals from that.
 // It seems `ui/mod.rs` includes modules. They are available in `crate::ui`.
@@ -37,7 +37,7 @@ pub async fn dashboard_task(
             (pc.target_temp, 60, pc.plant_name.clone(), pc.start_timestamp) 
         };
 
-        let day = if let Some(start) = start_ts {
+        let day = if let Some(_start) = start_ts {
              0 
         } else {
             0

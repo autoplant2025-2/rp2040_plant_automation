@@ -49,8 +49,7 @@ use embassy_rp::gpio::{Output, Level};
 use embassy_rp::pwm::{Pwm, Config as PwmConfig};
 use embassy_rp::adc::{Adc, Config as AdcConfig};
 use crate::hardware_manager::{HardwareManager, SharedActuatorState, ActuatorOutputs, HardwareInterface};
-use crate::control::{PlantController, ControlConfig};
-use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use crate::control::PlantController;
 
 static mut ARENA: MaybeUninit<[u8; 1024 * 160]> = MaybeUninit::uninit();
 
@@ -69,7 +68,7 @@ bind_interrupts!(struct Irqs {
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
-    let mut cc = ClockConfig::system_freq(200_000_000).unwrap(); //오버클럭의 생활화.....
+    let mut cc = ClockConfig::system_freq(280_000_000).unwrap(); //오버클럭의 생활화.....
     cc.core_voltage = CoreVoltage::V1_30;
     let p = embassy_rp::init(Config::new(cc));
 
@@ -258,7 +257,7 @@ async fn main(spawner: Spawner) {
                     *st = outputs;
                 }
                 
-                defmt::info!("Loop: Sensors: {:?} -> Outputs: {:?}", sensors.internal, outputs);
+                //defmt::info!("Loop: Sensors: {:?} -> Outputs: {:?}", sensors.internal, outputs);
             }
         }
     }

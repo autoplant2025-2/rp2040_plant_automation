@@ -8,19 +8,16 @@ use self::sensor_filter::MultiChannelKalmanFilter;
 use temp_hum_sensor_async::sht20::Sht20;
 use temp_hum_sensor_async::aht20::Aht20;
 use temp_hum_sensor_async::TempHumSensor;
-use pcf8591_async::Pcf8591;
+
 
 pub mod sensor_filter;
 
-use num_traits::Float;
+
 
 const PCF8591_VREF: f32 = 3.3;
 
 // NTC Defaults (Common 10k Module)
-const NTC_BETA_DEFAULT: f32 = 3950.0;
-const NTC_R_SERIES_DEFAULT: f32 = 10000.0;
-const NTC_R_NOMINAL_DEFAULT: f32 = 10000.0;
-const NTC_T_NOMINAL_DEFAULT: f32 = 25.0;
+
 
 /// Combined Temperature and Humidity Reading
 #[derive(Clone, Copy, Debug, Default)]
@@ -55,8 +52,8 @@ impl Default for CalibrationConfig {
 }
 
 /// Manages sensor acquisition, oversampling, and EKF state estimation
-use embassy_rp::adc::{Adc, Channel, Async, Config as AdcConfig, InterruptHandler as AdcInterruptHandler};
-use embassy_rp::peripherals::ADC;
+use embassy_rp::adc::{Adc, Channel, Async};
+
 use embassy_rp::gpio::Pull;
 use embassy_rp::Peri;
 
@@ -203,14 +200,7 @@ where
     }
 }
 
-fn convert_ntc(adc: u8) -> Option<f32> {
-    if !(20..236).contains(&adc) { return None; }
-    let v_out = adc as f32 * (PCF8591_VREF / 255.0);
-    let r_ntc = NTC_R_SERIES_DEFAULT * v_out / (PCF8591_VREF - v_out);
-    let t0 = NTC_T_NOMINAL_DEFAULT + 273.15;
-    let inv_t = (1.0 / t0) + (1.0 / NTC_BETA_DEFAULT) * (r_ntc / NTC_R_NOMINAL_DEFAULT).ln();
-    Some((1.0 / inv_t) - 273.15)
-}
+
 
 fn convert_ec(adc: u8, temp_c: f32, k_value: f32) -> Option<f32> {
     let v_raw = adc as f32 * (PCF8591_VREF / 255.0);

@@ -1,8 +1,8 @@
 use alloc::rc::Rc;
 use embassy_rp::gpio::{Input, Pull};
 use embassy_rp::Peri;
-use embassy_rp::peripherals::{PIN_8, PIO0};
-use embassy_rp::pio_programs::rotary_encoder::{Direction, PioEncoder};
+use embassy_rp::peripherals::PIN_8;
+
 use embassy_time::{with_timeout, Duration};
 use slint::platform::software_renderer::MinimalSoftwareWindow;
 use slint::platform::{Key, WindowEvent};

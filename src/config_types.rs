@@ -1,9 +1,9 @@
 use serde::{Serialize, Deserialize};
 use heapless::Vec;
 use heapless::String;
-use fixed::types::I16F16;
 
-type Number = I16F16;
+
+
 
 // Re-export or redefine ControlConfig if needed. 
 // For now, we assume ControlConfig will be updated to derive Serialize/Deserialize in control.rs

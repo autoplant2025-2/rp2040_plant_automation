@@ -4,7 +4,7 @@ use embassy_embedded_hal::shared_bus::asynch::spi::SpiDeviceWithConfig;
 use embassy_futures::yield_now;
 use embassy_rp::{spi, Peri};
 use embassy_rp::peripherals::{DMA_CH0, PIN_6, PIN_7, SPI0};
-use embassy_rp::pio::Pio;
+
 use embassy_rp::spi::{Phase, Polarity, Spi};
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::mutex::Mutex;

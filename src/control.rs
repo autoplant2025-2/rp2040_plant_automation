@@ -276,7 +276,7 @@ impl PlantController {
         
         if delta > Number::from_num(50) {
             self.safety_lockout = 10; // 5 seconds lockout
-            defmt::info!("TrayCtrl: Fast Rise (Delta={}) -> Force OFF & Lockout", delta.to_num::<f32>());
+            //defmt::info!("TrayCtrl: Fast Rise (Delta={}) -> Force OFF & Lockout", delta.to_num::<f32>());
         }
         
         if self.safety_lockout > 0 {
@@ -318,12 +318,12 @@ impl PlantController {
         }
         // Else: Hysteresis zone, maintain current state.
         
-        defmt::info!("TrayCtrl: Val={} Safe={} Start={} Stop={} -> PumpWater={}", 
-            tray_sensor.to_num::<f32>(), 
-            limit_safety.to_num::<f32>(), 
-            limit_start.to_num::<f32>(), 
-            limit_stop.to_num::<f32>(), 
-            self.pump_water_active);
+        // defmt::info!("TrayCtrl: Val={} Safe={} Start={} Stop={} -> PumpWater={}", 
+        //     tray_sensor.to_num::<f32>(), 
+        //     limit_safety.to_num::<f32>(), 
+        //     limit_start.to_num::<f32>(), 
+        //     limit_stop.to_num::<f32>(), 
+        //     self.pump_water_active);
         
         self.pump_water_active
     }

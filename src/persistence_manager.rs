@@ -1,13 +1,9 @@
-use alloc::rc::Rc;
-use embassy_executor::Spawner;
+
 use embassy_rp::flash::{Flash, Async};
-use embassy_rp::Peri;
-use embassy_rp::peripherals::{DMA_CH0, DMA_CH1, FLASH};
-use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
-use embassy_sync::mutex::Mutex;
+use embassy_rp::peripherals::FLASH;
 use sequential_storage::map::{fetch_item, store_item};
 use sequential_storage::cache::NoCache;
-use crate::config_manager::ConfigManager;
+
 use crate::config_types::{CalibrationData, DeviceSettings, PlantConfiguration};
 
 const FLASH_SIZE: usize = 2 * 1024 * 1024;

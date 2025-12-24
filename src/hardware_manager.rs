@@ -1,5 +1,5 @@
 use embassy_rp::pwm::{Pwm, Config as PwmConfig};
-use embassy_rp::gpio::{Output, Level};
+use embassy_rp::gpio::Output;
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::mutex::Mutex;
 use alloc::rc::Rc;

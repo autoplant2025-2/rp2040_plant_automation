@@ -64,10 +64,11 @@ heapless = { version = "0.9.1", features = ["serde"] }
 static_cell = { version = "2.1.1", features = ["nightly"] }
 chrono = { version = "0.4.42", default-features = false, features = ["alloc", "serde"] }
 qrcode2 = { version = "0.17.1", default-features = false }
-nanofish = { path = "nanofish", default-features = false }
+minimq = "0.8"
 picoserve = { version = "0.17.1", features = ["embassy", "alloc", "json"] }
 percent-encoding = { version = "2.3.2", default-features = false, features = ["alloc"] }
 blisp = { version = "0.2.0", default-features = false }
+myrtio-mqtt = "0.1.0"
 serde_json = { version = "1.0.145", default-features = false, features = ["alloc"] }
 
 

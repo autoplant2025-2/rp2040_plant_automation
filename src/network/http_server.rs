@@ -218,7 +218,7 @@ async fn get_ec(State(state): State<AppState>) -> impl IntoResponse {
         }
     };
     Response::new(StatusCode::OK, ec_val)
-        .with_headers([("Content-Type", "text/plain")])
+        .with_headers([("Content-Type", "text/plain"), ("Access-Control-Allow-Origin", "*")])
 }
 
 async fn get_tray(State(state): State<AppState>) -> impl IntoResponse {
@@ -231,7 +231,7 @@ async fn get_tray(State(state): State<AppState>) -> impl IntoResponse {
         }
     };
     Response::new(StatusCode::OK, tray_val)
-        .with_headers([("Content-Type", "text/plain")])
+        .with_headers([("Content-Type", "text/plain"), ("Access-Control-Allow-Origin", "*")])
 }
 
 async fn update_config(State(state): State<AppState>, body: String) -> impl IntoResponse {
@@ -316,7 +316,7 @@ async fn get_config_json(State(state): State<AppState>) -> impl IntoResponse {
     
     let json = serde_json::to_string(&resp).unwrap_or_default();
     Response::new(StatusCode::OK, json)
-        .with_headers([("Content-Type", "application/json")])
+        .with_headers([("Content-Type", "application/json"), ("Access-Control-Allow-Origin", "*")])
 }
 
 async fn update_config_json(
@@ -348,14 +348,23 @@ async fn update_config_json(
     }
     
     Response::new(StatusCode::OK, "{}")
-        .with_headers([("Content-Type", "application/json")])
+        .with_headers([("Content-Type", "application/json"), ("Access-Control-Allow-Origin", "*")])
 }
 
 async fn get_history(State(state): State<AppState>) -> impl IntoResponse {
     let hist = state.history.lock().await;
     let json = serde_json::to_string(&*hist).unwrap_or_else(|_| "[]".to_string());
     Response::new(StatusCode::OK, json)
-        .with_headers([("Content-Type", "application/json")])
+        .with_headers([("Content-Type", "application/json"), ("Access-Control-Allow-Origin", "*")])
+}
+
+async fn handle_options() -> impl IntoResponse {
+    Response::new(StatusCode::OK, "")
+        .with_headers([
+            ("Access-Control-Allow-Origin", "*"),
+            ("Access-Control-Allow-Methods", "POST, GET, OPTIONS"),
+            ("Access-Control-Allow-Headers", "Content-Type"),
+        ])
 }
 
 #[embassy_executor::task]
@@ -370,7 +379,7 @@ pub async fn http_server_task(
         .route("/script.js", get(script))
         .route("/api/ec", get(get_ec))
         .route("/api/tray", get(get_tray))
-        .route("/api/config", get(get_config_json).post(update_config_json))
+        .route("/api/config", get(get_config_json).post(update_config_json).options(handle_options))
         .route("/api/history", get(get_history))
         .route("/config", post(update_config))
         .with_state(AppState {
@@ -395,8 +404,8 @@ pub async fn http_server_task(
     };
 
     let mut buffer = [0u8; 2048];
-    let mut tcp_rx = [0u8; 128];
-    let mut tcp_tx = [0u8; 128];
+    let mut tcp_rx = [0u8; 1024];
+    let mut tcp_tx = [0u8; 1024];
 
     let server = Server::new(&app, &config, &mut buffer);
     server.listen_and_serve(0, stack_handle, 80, &mut tcp_rx, &mut tcp_tx).await;

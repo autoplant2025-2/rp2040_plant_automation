@@ -162,7 +162,7 @@ pub fn init_ui(
 	status_global.on_ip_address(move || {
 		if let Ok(stack) = net_stack_for_ip.try_lock() {
 			if let Some(config) = stack.config_v4() {
-                return slint::SharedString::from(alloc::format!("http://{}", config.address).as_str());
+                return slint::SharedString::from(alloc::format!("http://{}", config.address.address()).as_str());
             }
 		}
         slint::SharedString::from("No Network")

@@ -1,5 +1,5 @@
 use alloc::rc::Rc;
-use embassy_executor::Spawner;
+
 use embassy_rp::flash::Flash;
 use embassy_rp::Peri;
 use embassy_rp::peripherals::{DMA_CH1, FLASH};

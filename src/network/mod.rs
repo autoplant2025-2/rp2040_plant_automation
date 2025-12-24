@@ -1,5 +1,5 @@
 use alloc::rc::Rc;
-use cyw43::Control;
+
 use embassy_executor::Spawner;
 use embassy_net::{Config, Stack, StackResources};
 use embassy_rp::clocks::RoscRng;
@@ -15,6 +15,7 @@ use portable_atomic::AtomicBool;
 
 mod time_sync_task;
 mod connection_monitor;
+mod mqtt_task;
 pub mod wifi;
 pub mod http_server;
 
@@ -63,7 +64,7 @@ pub async fn init_network(
 	let seed = rng.next_u64();
 
 	// Init network stack
-	static RESOURCES: StaticCell<StackResources<4>> = StaticCell::new();
+	static RESOURCES: StaticCell<StackResources<5>> = StaticCell::new();
 	let (stack, runner) = embassy_net::new(net_driver, net_config, RESOURCES.init(StackResources::new()), seed);
 
 	spawner.spawn(net_task(runner).unwrap());
@@ -73,6 +74,7 @@ pub async fn init_network(
 	spawner.spawn(time_sync_task::time_sync_task(time_manager, shared_stack.clone(), config.clone()).unwrap());
 	spawner.spawn(connection_monitor::connection_monitor_task(control.clone(), shared_stack.clone(), config.clone()).unwrap());
     spawner.spawn(http_server::http_server_task(shared_stack.clone(), config.clone(), shared_sensor_data.clone(), shared_history.clone()).unwrap());
+    spawner.spawn(mqtt_task::mqtt_task(shared_stack.clone(), config.clone(), shared_sensor_data.clone()).unwrap());
 
 	(control, shared_stack)
 }
